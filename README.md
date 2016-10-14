@@ -19,7 +19,7 @@ These will take a few minutes to complete.
 
 ### Create config.js
 
-Create a file config.js in the main directory that contains your twitter keys:
+Create a file `config.js` in the main directory that contains your twitter keys:
 
 ```javascript
   module.exports = {
@@ -30,6 +30,9 @@ Create a file config.js in the main directory that contains your twitter keys:
    };
 ```
 You can get these by creating an "app" at twitter at https://apps.twitter.com/
+
+**WARNING** - Don't commit `config.js` to a public repository!
+
 
 ### Build the web app side of things (Don't forget this!)
 
