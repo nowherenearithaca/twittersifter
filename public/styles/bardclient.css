@@ -1,0 +1,738 @@
+
+
+.basic-row {
+/*	border: 1px solid #777;
+	border-radius:3px;*/
+
+/*	border-bottom:1px solid #eee;*/
+/*	margin-top:6px;*/
+}
+
+.highlighted {
+	display:inline-block;	
+	background: rgba(50,50,255,0.05);
+/*	border: 1px solid rgba(50,50,255,0.2);*/
+	border-radius: 3px;
+}
+
+#current-terms {
+
+/*	font-size:150%;*/
+	float:left;
+/*	margin-top:10px;
+	padding-bottom:10px;
+*//*	border-bottom:1px solid #888;*/
+	min-height:20px;
+
+}
+#current-terms .highlighted {
+	padding-left:4px;
+	padding-right:4px;
+}
+
+
+.glyphicon-heart  {
+	color: #999;
+	display:inline-block;
+}
+
+
+
+
+
+.did-say-it {
+
+	/* not sure what to do - using size now to indicate how many followers */
+/*	font-weight: bold;
+	font-size:120%;
+*/
+/*	border: 2px solid #444;
+	border-radius:4px;
+*//*	padding:3px;*/
+/*	font-style:italic; */
+}
+
+
+/*tr.did-say-it > td {
+  border-top:2px solid #444 !important;
+  border-bottom:2px solid #444;
+}
+
+tr.did-say-it > td:first-child {
+  border-left:2px solid #444;
+	border-top-left-radius: 4px; 
+    border-bottom-left-radius: 4px;
+}
+
+tr.did-say-it > td:last-child {
+	border-top-right-radius: 4px; 
+    border-bottom-right-radius: 4px;
+  border-right:2px solid #444;
+}
+*/
+
+.horizontal-ticker {
+	position:absolute;
+	width:74%;
+	left:13%;
+/*	top:20%;*/
+/*	left:25px;*/
+	width:1000000%; /* do I really need this?*/
+	background:rgba(254,254,254,0.98);
+/*	font-size:14px;*/
+	border:1px solid rgb(10,10,255);
+	padding-top:10px;
+	padding-bottom:10px;
+	overflow:hidden;
+	height:40px;
+}
+.horizontal-ticker tr {
+	display:inline-block;
+	float:left;
+}
+/*#horizontal-ticker-0 {
+	top:20px;
+}
+#horizontal-ticker-1 {
+	top:60px;
+}
+#horizontal-ticker-2 {
+	top:100px;
+}
+#horizontal-ticker-3 {
+	top:140px;
+}
+*/
+#initial-tweet-container {
+/*	position:fixed;
+*/	
+/*font-size:12px;*/
+/*	top:200px;
+	bottom:0;
+	left:100px;
+	right:100px;*/
+/*	overflow-y: scroll;*/
+}
+
+#initial-tweet-container {
+
+  margin-top:3px;
+/*  border-top:1px solid #999;*/
+
+}
+
+#initial-tweet-container .col-md-4 {
+  padding-left:4px !important;
+  padding-right:4px !important;
+}
+
+.tweet-table-container, #picked-favorites-area {
+    max-height:700px;
+    overflow-y:auto;
+}
+
+
+.tweet-table {
+	width:100%;
+	border-collapse:separate;
+  border-spacing:0 2px;	
+/*  padding:0 !important;*/
+/*border-collapse:collapse;*/
+/*font-family: "Helvetica Neue", Roboto, "Segoe UI", Calibri, sans-serif;*/
+/* Verdana based on the Franken 2014 paper */
+font-family: Verdana, Roboto, "Segoe UI", Calibri, sans-serif;
+
+}
+.tweet-table td {
+	vertical-align: middle;
+}
+
+.tweet-user-name {
+  /*max-width: 150px;*/ /*or whatever*/
+  word-wrap: break-word;
+  font-style:italic;
+}
+.tweet-text {
+  word-wrap: break-word;  /* see if that fixes the column from getting from too big */
+  /*color: blue;*/ /* what reddit uses */
+/*	display:inline-block;*/
+	padding-left:3px;
+/*	word-break:break-all;*/
+
+
+	overflow-wrap: break-word;
+  font-size: 12px; /* Note: 10px is too small for me ; */
+}
+
+.horizontal-tweet {
+	display:inline-block;
+}
+
+.follower-info {
+	padding-right:6px;
+/*	margin-right:6px;*/
+	text-align: right;
+}
+
+.do-favorite {
+	padding-left:5px;
+	padding-left:5px;
+}
+
+a.see-tweet {
+	text-decoration: inherit;
+    color: inherit;
+    display:inline-block;
+}
+
+a.see-tweet:hover {
+
+}
+
+  #sentiment-bar {
+      float:left;
+    width:200px;
+    height:28px;
+    position:relative;
+/*    margin-left:auto;
+*//*    margin-right:auto;
+    margin-bottom:5px;
+    margin-top:15px;*/
+    border-radius:4px;
+    border:1px solid rgba(0,0,0,0.05);
+/*    background:rgb(220,220,220);*/
+    overflow:hidden;
+  }
+.sentiment-name {
+  font-size:12px;
+  margin-top:2px;
+  font-style: italic;
+  font-weight: bold;
+  background:rgba(255,255,255,0.9);
+  padding:2px;
+  padding-left:4px;
+  padding-right:4px;
+  border-radius:3px;
+  display:inline-block;
+}
+
+  #sentiment-bar .polarity{
+    height:100%;
+    position:absolute;
+  }
+  #sentiment-bar .polarity.negative {
+    background-color:rgb(255,60,0);
+  }
+  #sentiment-bar .polarity.neutral {
+    background-color:rgb(220,220,220);
+  }
+  #sentiment-bar .polarity.positive {
+    background-color:rgb(0,198,1);
+  }
+
+/*.did-say-it td {
+  border-width:4px !important;
+}
+*/
+    .sentiment-negative {
+       border:0px solid rgb(255,60,0); 
+    }
+    .sentiment-positive {
+       border:0px solid rgb(0, 198,1); 
+    }
+    .sentiment-neutral {
+       border:0px solid rgb(220,220,220); 
+    }
+
+
+tr.sentiment-negative > td {
+  border-top:0px solid rgb(255,60,0) ;
+  border-color: rgb(255,60,0) !important;
+  border-bottom:0px solid rgb(255,60,0);
+}
+
+tr.sentiment-negative > td:first-child {
+  border-left:0px solid rgb(255,60,0);
+	border-top-left-radius: 4px; 
+    border-bottom-left-radius: 4px;
+}
+
+tr.sentiment-negative  > td:last-child {
+	border-top-right-radius: 4px; 
+    border-bottom-right-radius: 4px;
+  border-right:0px solid rgb(255,60,0);
+}
+
+tr.sentiment-positive > td {
+  border-top:0px solid rgb(0, 198,1) ;
+  border-color: rgb(0, 198,1) !important;
+  border-bottom:0px solid rgb(0, 198,1);
+}
+
+tr.sentiment-positive > td:first-child {
+  border-left:0px solid rgb(0, 198,1);
+	border-top-left-radius: 4px; 
+    border-bottom-left-radius: 4px;
+}
+
+tr.sentiment-positive  > td:last-child {
+	border-top-right-radius: 4px; 
+    border-bottom-right-radius: 4px;
+  border-right:0px solid rgb(0, 198,1);
+}
+
+tr.sentiment-neutral> td {
+  border-top:0px solid rgb(220,220,220) ;
+  border-bottom:0px solid rgb(220,220,220);
+  border-color:rgb(220,220,220) !important;
+}
+
+tr.sentiment-neutral > td:first-child {
+  border-left:0px solid rgb(220,220,220);
+	border-top-left-radius: 4px; 
+    border-bottom-left-radius: 4px;
+}
+
+tr.sentiment-neutral  > td:last-child {
+	border-top-right-radius: 4px; 
+    border-bottom-right-radius: 4px;
+  border-right:0px solid rgb(220,220,220);
+}
+
+
+
+
+  #sentiment-bar .sentiment-score {
+    position :absolute;
+    height:100%;
+    width:4px;
+    background-color: rgb(0,0,0.3);
+    display:none;
+  }
+
+.table>tbody>tr>td, .table>tbody>tr>th, 
+.table>tfoot>tr>td, .table>tfoot>tr>th,
+.table>thead>tr>td, .table>thead>tr>th  {
+  border-width:inherit;
+  padding:2px;
+}
+
+#picked-favorites-area {
+/*  border:1px solid blue;
+  border-radius:4px;*/
+}
+
+.pick-favorite {
+  position:relative;
+	display:inline-block;
+	border:1px solid transparent; /* so that mebbe it doesn't jump when color border added */
+	border-radius:4px;
+	padding:3px;
+}
+
+.pick-favorite:hover {
+	border:1px solid #777;
+	border-radius:4px;
+	padding:3px;
+}
+
+[is-picked='true'] .glyphicon-pushpin, .glyphicon-pushpin:hover  {
+	color: red;
+}
+
+[is-picked='true'] {
+	/* border:1px solid #FF0000; */
+	border:1px solid #00FF00;
+	border-radius:4px;
+	padding:3px;
+}
+
+
+.number-followers {
+	display:inline-block;
+}
+
+
+.picked-tweet-wrapper {
+/*    border: 1px solid blue;*/
+    border-top:1px solid #eeeedd;
+    padding-left: 4px;
+    padding-right: 4px;
+    border-radius: 4px;
+}
+
+.picked-tweet-wrapper .btn {
+  margin-bottom:-20px !important;
+}
+
+
+blockquote {
+  font-size:inherit;
+  padding:0;
+}
+
+blockquote.twitter-tweet {
+  display: inline-block;
+  font-family: "Helvetica Neue", Roboto, "Segoe UI", Calibri, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 16px;
+  border-color: #eee #ddd #bbb;
+  border-radius: 5px;
+  border-style: solid;
+  border-width: 1px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  margin: 10px 5px;
+  padding: 0 16px 16px 16px;
+  max-width: 468px;
+}
+ 
+blockquote.twitter-tweet p {
+  font-size: 16px;
+  font-weight: normal;
+  line-height: 20px;
+}
+ 
+blockquote.twitter-tweet a {
+  color: inherit;
+  font-weight: normal;
+  text-decoration: none;
+  outline: 0 none;
+}
+ 
+blockquote.twitter-tweet a:hover,
+blockquote.twitter-tweet a:focus {
+  text-decoration: underline;
+}
+
+#currentSearchAndTweetCount {
+/*     width:100%; */
+    /*margin-top: 8px;*/
+/*     margin-bottom: 8px; */
+/* /*     margin-left:5px; */
+/*    font-size:14px;*/
+    /* float:left; */
+    display:inline-block;
+    margin-left:6px;
+    padding-top:15px;
+}
+
+
+#currentTweetInfoTable {
+    padding-top:9px;
+    margin-right:10px;
+    display:inline-block;
+    font-size:80%;
+}
+td#currentSearchTermsTweets, td#currentSearchTermsRetweets {
+    padding-left:4px;
+    text-align:right;
+}
+
+#txtSearchTerms {
+/*     float:left; */
+/*     font-size: 18px; */
+    width: 250px;
+/*     border-radius: 4px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding-left:5px;
+ */
+    margin-top: 3px;
+    background-color:#ff8fa;
+    border: 1px solid #e1e8ed;
+    border-radius:21px;
+    transition: all 0.2s ease-in-out;
+    color: #292f33;
+    height:32px;
+    padding: 5px 27px 6px 12px;
+}
+
+.main-content-area  {
+/*  margin-top:35px; */
+  /* this is currently because nav bar is fixed position at top */
+}
+
+
+table.sentiment-row {
+/*  margin-top:8px;*/
+}
+table.sentiment-row td {
+  vertical-align: middle;
+}
+.sentiment-bar-row-thing {
+  margin-right:5px;
+}
+
+.sentiment-positive {
+  background:rgba(0,255,0,0.07);
+  border-width:0;
+}
+.sentiment-negative {
+  background:rgba(255,0,0,0.07);
+  border-width:0;
+}
+.did-say-it.sentiment-negative {
+  background:rgba(255,0,0,0.26);
+}
+.did-say-it.sentiment-positive {
+  background:rgba(0,255,0,0.26);
+}
+.did-say-it.sentiment-neutral {
+  background:rgba(220,220,220,0.35);
+}
+
+.sentiment-positive:hover {
+  background:rgba(0,255,0,0.4);
+}
+.sentiment-negative:hover {
+  background:rgba(255,0,0,0.4);
+}
+.sentiment-neutral {
+  background:rgba(220,220,220,0.2);
+  border-width:0;
+}
+.sentiment-neutral:hover {
+  background:rgba(220,220,220,0.6);
+}
+/*.basic-row td:hover {
+  border-width:1px !important; 
+}
+*/
+.basic-row {
+	border-top: 1px solid #ddd;
+  	transition: border-width 0.15s;
+  	transition: background 0.15s;
+}
+
+.navbar {
+	margin-bottom:2px;
+}
+
+/*
+.basic-row.did-say-it > td {
+  border-top:0px solid rgb(0, 198,1) ;
+  border-bottom:0px solid rgb(0, 198,1);
+  border-color:rgb(0, 198,1) !important;
+}
+
+.basic-row.did-say-it  > td:first-child {
+  	border-left:0px solid rgb(0, 198,1);
+	border-top-left-radius: 4px; 
+    border-bottom-left-radius: 4px;
+}
+
+.basic-row.did-say-it  > td:last-child {
+	border-top-right-radius: 4px; 
+    border-bottom-right-radius: 4px;
+  	border-right:0px solid rgb(0, 198,1);
+}
+
+
+.basic-row.did-say-it {
+	border-width:1px;
+  	background:rgba(0,255,0,0.15) !important;
+}
+.basic-row.did-say-it:hover {
+  	background:rgba(0,255,0,0.3) !important;
+}
+*/
+
+.area-header-title {
+/*	font-weight:bold;*/
+/*	border-bottom: 1px solid #333;*/
+  font-style: italic;
+  text-align: center;
+}
+
+.number-tweets, .words-per-tweet, .stat-term {
+	display:inline-block;
+  font-size: 80%;
+}
+
+a.user-name-link {
+	color: inherit !important; /* no color here */
+}
+
+#number-followers-to-interrupt, #min-diff-between-handling-tweets-ms, #interest-threshold {
+	width:80px;
+	display:inline-block;
+  height:auto !important;
+}
+#min-diff-between-handling-tweets-ms {
+  width:60px;
+}
+
+
+.account-group .fullname .Icon--verified {
+  top: 0;
+}
+.account-group .Icon--verified {
+  margin-left: 3px;
+  top: 3px;
+}
+.Icon--verified {
+  color: #88c9f9;
+}
+.Icon--small {
+   font-size: 16px; 
+   line-height: 15px; 
+}
+.Icon {
+  font-family: "rosettaicons";
+  background: transparent;
+  display: inline-block;
+  font-style: normal;
+  vertical-align: baseline;
+  position: relative;
+}
+.Icon--verified:before {
+  color: #fff;
+}
+
+.Icon--verified:before {
+  content: "\f032";
+  position: absolute;
+  top: 19%;
+  left: 15%;
+  font-size: .7em;
+  line-height: 1;
+}
+.Icon--verified {
+  color: #88c9f9;
+}
+.verified {
+  color: #88c9f9;
+  display:inline-block;
+  width:12px;
+  height:12px;
+  margin-right:10px;
+}
+
+.verified-check {
+    position: absolute;
+    display:inline-block;
+    color: #fff;
+/*    margin-left: -22px;
+    font-size: 10px;*/
+    /* margin-top: -25px; */
+/*    top: 13px;*/
+/*    left: 28px;*/
+
+    margin-left: -20px;
+    font-size: 6px;
+    top: 9px;
+
+}
+
+.Icon:after, .Icon:before {
+  display: block;
+  font-family: "rosettaicons";
+  font-weight: normal;
+  font-style: normal;
+  text-align: center;
+  -webkit-font-smoothing: antialiased;
+}
+.Icon--verified:after {
+  content: "\f099";
+  position: relative;
+  line-height: 1;
+}
+
+.header {
+/*    padding-top: 10px;
+    padding-bottom: 10px;*/
+    min-width: 1000px;
+/*    background-color: #f5f5f5;*/
+    background-color: rgba(51, 122, 183, 0.09);
+    border-bottom: 1px solid #e5e5e5
+}
+
+.checkbox-inline label {
+
+  font-weight:normal;
+
+}
+
+#btnPause {
+  padding-right: 2px;
+  float:left;
+}
+
+.current-stats {
+  font-size:80%;
+}
+
+.navbar-brand {
+  padding-top:10px;
+  padding-bottom:10px;
+  height: auto;
+}
+
+
+
+
+
+
+#live-chart {
+  width:100%;
+  height:75px;
+/*   border: 1px solid blue; */
+/*   border-radius:4px; */
+}
+
+
+.live-chart {
+/*   border: 1px solid red; */
+}
+.live-chart .axis {
+            stroke-width: 1;
+        }
+
+.live-chart .axis .tick line {
+            stroke: black;
+        }
+
+.live-chart .axis .tick text {
+            fill: black;
+            font-size: 0.7em;
+        }
+
+.live-chart .axis .domain {
+            fill: none;
+            stroke: black;
+        }
+
+.live-chart .group {
+            fill: none;
+            stroke: black;
+            stroke-width: 1.5;
+        }
+
+#live-chart-title {
+  position:absolute;
+  top:5px;
+  left:10px;
+  background: rgba(255,255,255,0.9);
+  font-family: inherit;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.value-in-second-blip {
+  fill: #428bca;
+  stroke: none;
+  opacity:0.6;
+}
+
+.email-picked-tweets:hover {
+  color:red;
+}
+
+#interest-stats-area {
+    font-size:75%;
+}
+.interest-initial-stats {
+  margin:0 !important;
+}
+

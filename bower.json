@@ -1,0 +1,30 @@
+{
+  "name": "twittersifter",
+  "version": "0.0.0",
+  "authors": [
+    "BFL <bradflyon@gmail.com>"
+  ],
+  "moduleType": [
+    "globals"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.6",
+    "clipboard": "~1.5.5"
+  },
+  "devDependencies": {
+    "bootstrap": "~3.3.6",
+    "jquery": "~2.1.4",
+    "font-awesome": "~4.5.0",
+    "d3": "~3.5.12",
+    "seiyria-bootstrap-slider": "~6.0.4"
+  }
+}

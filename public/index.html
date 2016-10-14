@@ -1,0 +1,368 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+	<head>
+	    <meta charset="utf-8">
+	    <title>Twitter Sifter</title>
+
+	    <!-- build:css(.) styles/vendor.css -->
+	    <!-- bower:css -->
+	    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" >
+        <link rel="stylesheet" 
+                href="bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.css">
+	    <!-- endbower -->
+	    <!-- endbuild -->
+
+<!--         <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.css" />
+ -->        
+<!--         <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css"> -->
+
+    <link rel="stylesheet" 
+                href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+    <!-- build:css styles/main.css -->
+        <link rel="stylesheet" href="styles/heart.css">
+	    <link rel="stylesheet" href="styles/bardclient.css">
+    <!-- endbuild -->
+	</head>
+
+	<body> 
+
+	<script type="text/javascript" async src="//platform.twitter.com/widgets.js"></script>
+
+    <div class="header" role="banner">
+        <div class="container">
+                    <span class="navbar-brand" href="#">Twitter Sifter (Alpha)</span>
+        </div>
+    </div>
+
+
+    <div class="container"> <!-- for the margin stuff -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+                <a href="#main" aria-controls="main" role="tab" data-toggle="tab">Main
+                </a>
+            </li>
+            <li role="presentation">
+                <a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings
+                </a>
+            </li>
+        </ul>
+    </div>
+
+<!-- Tab panes -->
+  <div class="tab-content" style="margin-top:15px;">
+    <div role="tabpanel" class="tab-pane active" id="main">
+
+    <!-- the "container" class has spacing I don't like -->
+	<div class="main-content-area container ignore-this-class-for-now-container">
+
+        <div id="heart-area"></div>
+
+        <div class="container">
+
+        <button id="btnPause" type="button" class="sentiment-bar-row-thing btn btn-default btn-xs ">
+                <span class="glyphicon glyphicon-pause"></span>
+        </button>     
+        <div class="sentiment-bar-row-thing" id="current-terms"></div>
+
+        <div class="stat-term" style="position:relative;">
+
+        </div>
+
+
+<!-- The sentiment stuff is temporarily not being shown because I don't feel like the
+        sentiment numbers are very good. -->
+<!--                 <table class="sentiment-row">
+                    <tr>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button id="btnPause" type="button" class="sentiment-bar-row-thing btn btn-default btn-xs ">
+                                    <span class="glyphicon glyphicon-pause"></span>
+                            </button>     
+                        </td> -->
+<!--                         <td>
+                            <div class="sentiment-bar-row-thing text-center" id="sentiment-bar" title="Sentiment (maybe fancier tooltip/mouseover later)">
+                              <div class="polarity negative"></div>
+                              <div class="polarity neutral"></div>
+                              <div class="polarity positive"></div>
+                              <div class="sentiment-score"></div>
+                              <div class="sentiment-name text-center">Sentiment</div>
+                            </div>
+                        </td> -->
+<!--                         <td>
+                            <div class="sentiment-bar-row-thing" id="current-terms"></div>
+                        </td>
+                    </tr>
+                </table>
+ --><!--             <div class="col-md-4">
+                    <div id="sentiment-bar">
+                      <div class="polarity negative"></div>
+                      <div class="polarity neutral"></div>
+                      <div class="polarity positive"></div>
+                      <div class="sentiment-score"></div>
+                    </div>
+            </div> -->
+        </div>
+
+<!--         <div class="container">
+            <div class="text-center current-stats ignore-col-md-12 ignore-col-md-offset-1">
+ -->
+<!--                 <div class="number-tweets"></div> tweets ( -->
+<!--                 <div class="tweets-per-minute stat-term"></div> tweets/minute,
+                <div class="words-per-tweet"></div> <span title="terms per tweet"> terms/tweet</span>,
+                <div class="words-per-minute stat-term"></div><span title="terms per minute"> terms/minute</span>, 
+
+                <div class="words-per-minute-spoken stat-term"></div> spoken terms/minute
+ -->
+<!--             </div>
+        </div>
+ -->
+        <div class="container">
+            <div class="row col-sm-12" style="position:relative;">
+                <div id="live-chart-title">tweets per second</div>
+                <div id="live-chart"></div>
+            </div>
+        </div>
+        <div class="row col-sm-12" id="initial-tweet-container">
+            <div class="tickers" id="tickers"></div>
+
+
+            <div class="col-sm-3 col-md-3 outer-tweet-table-container">
+                <div class="area-header-title">Not Spoken (Click to Pick)
+<!--                     <div class="stat-term">
+                        <div class="words-per-tweet"></div> 
+                        <span title="terms per tweet"> terms/tweet</span>,
+                        <div class="words-per-minute stat-term"></div>
+                        <span title="terms per minute"> shown terms/minute</span>
+                    </div> -->
+                </div>
+                <div class="tweet-table-container">
+                    <table class="table table-hover tweet-table" id="tweet-table">
+                         <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <div class="col-sm-3 col-md-3 outer-tweet-table-container">
+                <div class="area-header-title">Spoken Tweets (Click to Pick)
+<!--                     <div class="stat-term">
+                        <div class="words-per-minute-spoken stat-term"></div> spoken terms/minute
+                    </div> -->
+
+                </div>
+                <div class="tweet-table-container">
+                    <table class="table table-hover tweet-table" id="spoken-tweet-table">
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-sm-3 col-md-3 outer-tweet-table-container">
+                <div class="area-header-title">Maybe Interesting (<span id="show-interest-threshold-value"></span>)
+                    <input id="interesting-tweet-threshold-slider" 
+                            data-slider-id='ex1Slider' 
+                            type="text" 
+                            data-slider-min="0" 
+                            data-slider-max="110" 
+                            data-slider-step="1" 
+                            data-slider-value="40"/>
+
+<!--                      &nbsp; <span class="email-picked-tweets glyphicon glyphicon-envelope"></span> -->
+
+                <div id="interest-stats-area"></div>
+
+                </div>
+                <table class="table table-hover tweet-table" id="interesting-tweet-table">
+                    <tbody></tbody>
+                </table>
+
+            </div>
+            <div class="col-sm-3 col-md-3 ">
+                <div class="area-header-title">Picked Tweets
+<!--                      &nbsp; <span class="email-picked-tweets glyphicon glyphicon-envelope"></span> -->
+                </div>
+                <div id="picked-favorites-area"></div>
+            </div>
+        </div>
+
+	</div>	
+</div> <!-- tab -->
+
+    <div role="tabpanel" class="tab-pane" id="settings">
+
+        <div class="container">
+            <div class="ignore-stat-term ignore-col-md-12 ignore-col-md-offset-1">
+
+                <table class="table table-condensed table-hover" style="width:auto;">
+                    <tr>
+                        <td class="text-right">Colorify Text <br/>(a la Beeline)</td>
+                        <td><input type="checkbox" id="do-colorify" value="checked" checked></td>
+                    </tr>
+                    <tr>
+                        <td class="text-right">Show @usernames</td>
+                        <td><input type="checkbox" id="do-show-user-references" value="checked" checked></td>
+                    </tr>
+                    <tr>
+                        <td class="text-right">Show User Info</td>
+                        <td><input type="checkbox" id="do-show-user-info" ></td>
+                    </tr>
+                    <tr>
+                        <td class="text-right">Min Gap (sec)</td>
+                        <td>
+                            <select class="form-control stat-term" id="min-diff-between-handling-tweets-ms">
+            <!--                     <option value="1000">1000</option> -->
+                                 <option value="0">0</option>
+                                 <option value="100">0.1</option>
+                                <option value="250">0.25</option>
+                                <option value="500">0.5</option>
+                                <option value="1000">1</option>
+                                <option value="2000" selected="selected">2</option>
+                                <option value="5000">5</option>
+                                <option value="10000">10</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-right">Interrupt Threshold</td>
+                        <td>
+                            <select class="form-control stat-term" id="number-followers-to-interrupt">
+            <!--                     <option value="1000">1000</option> -->
+                                 <option value="5000">5000</option>
+                                <option value="10000">10,000</option>
+                                <option value="20000">20,000</option>
+                                <option value="50000" selected="selected">50,000</option>
+                                <option value="100000">100,000</option>
+                                <option value="500000">500,000</option>
+                                <option value="1000000">1,000,000</option>
+                            </select>                            
+                        </td>
+                    </tr>
+
+<!--                     <tr>
+                        <td class="text-right">"Interest" Threshold</td>
+                        <td>
+                            <select class="form-control stat-term" id="interest-threshold">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3" selected="selected">3</option>
+                                <option value="4" >4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="10">10</option>
+                            </select>                            
+                        </td>
+                    </tr> -->
+
+
+                </table>
+
+<!--                 <div class="checkbox-inline">
+                  <label>
+                    <input type="checkbox" id="old-do-colorify" value="checked" checked>
+                    Colorify Text (a la Beeline)
+                  </label>
+                </div>
+                
+                <br/>
+
+                <div class="checkbox-inline">
+                  <label>
+                    <input type="checkbox" id="old-do-show-user-info" >
+                    Show User
+                  </label>
+                </div>
+
+                <br/>
+
+                <div title="Min Gap (sec)" class="stat-term">
+                    Min Gap (sec)
+                </div>
+                <select class="form-control stat-term" id="old-min-diff-between-handling-tweets-ms">
+                     <option value="0">0</option>
+                     <option value="100">0.1</option>
+                    <option value="250">0.25</option>
+                    <option value="500" selected="selected">0.5</option>
+                    <option value="1000" >1</option>
+                    <option value="2000">2</option>
+                    <option value="5000">5</option>
+                    <option value="10000">10</option>
+                </select>
+
+
+                <br/>
+
+                <div title="If a user has more than this number of followers, the tweet will be spoken" class="stat-term">Interrupt Threshold
+                </div>
+                <select class="form-control stat-term" id="old-number-followers-to-interrupt">
+                     <option value="5000">5000</option>
+                    <option value="10000">10,000</option>
+                    <option value="20000">20,000</option>
+                    <option value="50000" selected="selected">50,000</option>
+                    <option value="100000">100,000</option>
+                    <option value="500000">500,000</option>
+                    <option value="1000000">1,000,000</option>
+                </select>
+ -->
+            </div>
+        </div>
+
+
+    </div>
+
+</div> <!-- tab-content -->
+
+
+<!-- An area that will
+* show the tweets
+* highlight if they were spoken
+* has options for ignoring tweets with additional terms - some sort of existing widget for this
+* as wide as the screen
+* color based on sentiment
+* link to tweet just via the status id
+* highlight the terms subtly 
+* ignore showing links by default
+* no line breaks - fit on a single line
+* twitter user info first
+ -->
+
+    <!-- build:js(.) scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/jquery-timeago/jquery.timeago.js"></script>
+    <script src="bower_components/jquery-timeago/locales/jquery.timeago.en-short.js"></script>
+    <script src="bower_components/clipboard/dist/clipboard.js"></script>
+    <script src="bower_components/d3/d3.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+
+
+        <!-- build:js(.) scripts/plugins.js -->
+        <script src="bower_components/bootstrap/js/alert.js"></script>
+        <script src="bower_components/bootstrap/js/affix.js"></script>
+        <script src="bower_components/bootstrap/js/alert.js"></script>
+        <script src="bower_components/bootstrap/js/dropdown.js"></script>
+        <script src="bower_components/bootstrap/js/tooltip.js"></script>
+        <script src="bower_components/bootstrap/js/modal.js"></script>
+        <script src="bower_components/bootstrap/js/transition.js"></script>
+        <script src="bower_components/bootstrap/js/button.js"></script>
+        <script src="bower_components/bootstrap/js/popover.js"></script>
+        <script src="bower_components/bootstrap/js/carousel.js"></script>
+        <script src="bower_components/bootstrap/js/scrollspy.js"></script>
+        <script src="bower_components/bootstrap/js/collapse.js"></script>
+        <script src="bower_components/bootstrap/js/tab.js"></script>
+
+        <script src="bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"></script>
+
+        <!-- endbuild -->
+
+        <!-- build:js({public,.tmp}) scripts/main.js -->
+		<script src="scripts/smslingo.js"></script>
+        <script src="scripts/heart.js"></script>
+		<script src="scripts/bardclient.js"></script>
+		<script src="scripts/bardclientmain.js"></script>
+        <!-- endbuild -->
+
+	</body> 
+</html>

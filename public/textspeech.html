@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+
+<html>
+<body>
+
+<script>
+
+speechSynthesis.onvoiceschanged = function() {
+
+	console.dir(speechSynthesis);
+
+	var numberVoices = speechSynthesis.getVoices().length;
+	console.log("Number voices: " + numberVoices);
+
+	speechSynthesis.getVoices().forEach(function(voice) {
+	
+	console.dir(voice);		
+	//console.log(voice.voiceUri + ", " + voice.default);
+
+	});
+
+}
+var msg = new SpeechSynthesisUtterance("test");
+
+msg.voice = speechSynthesis.getVoices()[0];
+msg.onend = function(e) {
+	console.log("said something...");
+	console.dir(e);
+	//log("Finished first msg test in " + )
+};
+
+speechSynthesis.speak(msg); 
+</script>
+</body>
+</html>

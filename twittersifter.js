@@ -1,0 +1,934 @@
+
+
+//Basic usage:
+// node twittersifter.js --doStream --sayIt --track hello
+// separate different terms with commas
+
+if (!String.prototype.startsWith) {
+  String.prototype.startsWith = function(searchString, position) {
+    position = position || 0;
+    return this.indexOf(searchString, position) === position;
+  };
+}
+
+
+// testing using everything related to NFL
+function getAllNFLTracking() {
+
+  var s = "nfl";
+  s += "," + "officials";
+  s += "," + "refs";
+  s += "," + "packers";
+  s += "," + "greenbay";
+  s += "," + "cowboys";
+  s += "," + "redskin";
+  s += "," + "eagles";
+  s += "," + "giants";
+  s += "," + "cardinals";
+
+  s += "," + "steelers";
+  s += "," + "titans";
+  s += "," + "chargers";
+  s += "," + "vikings";
+  s += "," + "jets";
+  s += "," + "raiders";
+
+  s += "," + "dolphins";
+  s += "," + "falcons";
+  s += "," + "texans";
+
+  s += "," + "rams";
+
+  s += "," + "bears";
+
+  s += "," + "chiefs";
+
+  s += "," + "carolina";
+  s += "," + "patriots";
+
+  s += "," + "seahawks";
+
+  s += "," + "49ers";
+
+  s += "," + "broncos";
+
+  s += "," + "ravens";
+
+  s += "," + "bills";
+
+  s += "," + "panthers";
+
+  s += "," + "lions";
+
+  s += "," + "colts";
+
+  s += "," + "browns";
+
+  s += "," + "jaguars";
+
+  s += "," + "saints";
+
+  s += "," + "bengals";
+  s += "," + "tampa bay";
+  s += "," + "buccaneers";
+
+  return s;
+
+}
+
+function stringContainsOneOfTheseTerms(s, terms) {
+  var i;
+
+  s = s.toLowerCase();
+  for (i=0;i<terms.length;i++) {
+    if (s.indexOf(terms[i]) > -1) {
+      return true;
+    }
+  }
+  return false;
+
+}
+
+var retext = require('retext');
+//not used anymore... var inspect = require('unist-util-inspect');
+var sentiment = require('retext-sentiment');
+
+//this one should be better
+//var NLP = require('stanford-corenlp');
+//Brad-Lyons-iMac:bardbot bradflyon$ export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home
+
+//var config = {"nlpPath":"./corenlp","version":"3.4"};
+var path = require('path');
+//console.log(path.join ( __dirname,'./stanford-corenlp-full-2015-04-20'));
+
+// I played with this a little - might return to it eventually
+// var config = {
+
+// 	'nlpPath':path.join ( __dirname,'./stanford-corenlp-full-2015-04-20'), //the path of corenlp
+// 	'version':'3.5.2', //what version of corenlp are you using
+// 	'annotators': ['tokenize','ssplit','pos','parse','sentiment','depparse','quote'], //optional!
+// 	'extra' : {
+//       'depparse.extradependencie': 'MAXIMAL'
+//     }
+
+// };
+
+//issue with java stuff atm and weird error installing "java" module ld: library not found for -lgcc_s.10.5
+//hitting memory error thing to deal with - I think it's worth figuring out... 
+//var coreNLP = new NLP.StanfordNLP(config);
+//wait - do I even need java npm?  stanford thing got its own thing for it
+
+//coreNLP.loadPipelineSync(); //this was overwriting my options defined above...
+// coreNLP.process('This is so good.', function(err, result) {
+//   console.log(err,JSON.stringify(result,null));
+// });
+
+var say = require('say');
+var SmsLingo = require('smslingo');
+var sms = new SmsLingo();
+var argv = require('yargs').argv;
+
+//this file should be of this form
+
+// Include your access information below
+// module.exports = {
+//   "consumer_secret": "your-twitter-consumer-secret",
+//   "consumer_key": "your-twitter-consumer-key",
+//   "access_token": "your-twitter-access-token",
+//   "access_token_secret": "your-twitter-access-secret"
+// };
+
+var config = require('./config.js');
+
+var Twit = require('twit')
+
+//Set up the speaking voices...
+var voices = [];
+//voices.push('Agnes'); //a little unpleasant
+//voices.push('Kathy');
+//not nice voices.push('Princess');
+//voices.push('Vicki');
+voices.push('Victoria'); //eastern europish
+//voices.push('Albert');
+voices.push('Alex');
+voices.push('Fred');
+voices.push('Junior');
+//voices.push('Bruce');
+//voices.push('Ralph');
+
+function getRandomInt(min, max, rnd) {
+  rnd = rnd || Math.random;
+  return Math.floor(rnd() * (max - min + 1)) + min;
+}
+
+function getRandomVoice() {
+  var index = getRandomInt(0,voices.length-1);
+  return voices[index];
+}
+var T = new Twit(config);
+
+// This is some basic info on the use of Twit
+// {
+//     consumer_key:         '...'
+//   , consumer_secret:      '...'
+//   , access_token:         '...'
+//   , access_token_secret:  '...'
+// })
+
+//
+//  tweet 'hello world!'
+//
+// T.post('statuses/update', { status: 'Hello at ' +  (new Date()) }, function(err, data, response) {
+//   console.log("Updated status");
+//   console.log(data)
+// })
+
+//until
+//Returns tweets created before the given date. Date should be formatted as YYYY-MM-DD. 
+// Keep in mind that the search index has a 7-day limit. In other words, no tweets will be found for a date older than one week.
+//Example Values: 2015-07-19
+//
+//  search twitter for all tweets containing the word 'banana' since Nov. 11, 2011
+//
+// T.get('search/tweets', { q: 'shakespeare until:2010-11-11', count: 100 }, function(err, data, response) {
+//   console.log(data)
+// })
+
+//
+//  get the list of user id's that follow @tolga_tezel
+//
+// T.get('followers/ids', { screen_name: 'tolga_tezel' },  function (err, data, response) {
+//   console.log(data)
+// })
+
+//
+//  retweet a tweet with id '343360866131001345'
+//
+// T.post('statuses/retweet/:id', { id: '343360866131001345' }, function (err, data, response) {
+//   console.log(data)
+// })
+
+//
+//  destroy a tweet with id '343360866131001345'
+//
+// T.post('statuses/destroy/:id', { id: '343360866131001345' }, function (err, data, response) {
+//   console.log(data)
+// })
+
+//
+// get `funny` twitter users
+//
+// T.get('users/suggestions/:slug', { slug: 'twitter' }, function (err, data, response) {
+//   console.log("Got suggestions");
+//   console.log(data)
+// })
+
+// T.get('users/suggestions/:slug', { slug: 'shakespeare' }, function (err, data, response) {
+//   console.log(data)
+// })
+
+
+//
+// post a tweet with media
+//
+// var b64content = fs.readFileSync('/path/to/img', { encoding: 'base64' })
+
+// // first we must post the media to Twitter
+// T.post('media/upload', { media_data: b64content }, function (err, data, response) {
+
+//   // now we can reference the media and post a tweet (media will attach to the tweet)
+//   var mediaIdStr = data.media_id_string
+//   var params = { status: 'loving life #nofilter', media_ids: [mediaIdStr] }
+
+//   T.post('statuses/update', params, function (err, data, response) {
+//     console.log(data)
+//   })
+// })
+
+//
+//  stream a sample of public statuses
+//
+// var stream = T.stream('statuses/sample')
+
+// stream.on('tweet', function (tweet) {
+//   console.log(tweet)
+// })
+
+//
+//  filter the twitter public stream by the word 'mango'.
+//
+// var stream = T.stream('statuses/filter', { track: 'shakespeare' })
+
+// stream.on('tweet', function (tweet) {
+//   console.log(tweet)
+// })
+
+//
+// filter the public stream by the latitude/longitude bounded box of San Francisco
+//
+// var sanFrancisco = [ '-122.75', '36.8', '-121.75', '37.8' ]
+
+// var stream = T.stream('statuses/filter', { locations: sanFrancisco })
+
+// stream.on('tweet', function (tweet) {
+//   console.log(tweet)
+// })
+
+//
+// filter the public stream by english tweets containing `#apple`
+//
+
+//node bardtwit.js --doStream --track cnn,foxnews
+//node bardtwit.js --doStream --track trump
+//this worked - node bardtwit.js --doStream --track "what is your position"
+if (argv.doStream) { 
+
+  //console.dir(argv);
+
+  var haveLoggedFull = false;
+
+  var track = argv.track || "shakespeare";
+
+  if (track==="allnfl") {
+    track = getAllNFLTracking();
+  }
+
+  var originalTrack = track;
+
+  var things = track.split(',')
+                        .filter(function (t){return t.trim().length>0;})
+                        .map(function(t) {return {term:t, results:[]}}); //
+
+
+  var requiredThings = things.filter(function(t) {return t.term.length>1 && t.term.startsWith("+");})
+                            .map(function(t) {return t.term.toLowerCase().slice(1);});
+
+  var ignoredThings = things.filter(function(t) {return t.term.length>1 && t.term.startsWith("-");})
+                            .map(function(t) {return t.term.toLowerCase().slice(1);});
+
+  //make a hashmap of the things to ignore
+  // var ignoreThingsHash = {};
+  // ignoredThings.forEach(function(t) {
+  //     ignoreThingsHash[t.term.slice(1)] = 1;
+  // });
+
+  var trackedThings = things.filter(function(t) {return !t.term.startsWith("-");});
+
+  track = trackedThings.map(function(t) {return t.term;})
+                        .join(","); //put back together the things we want...
+
+  //console.log(track);
+
+  //console.log('track: ' + track);
+  var stream = T.stream('statuses/filter', { track: track, language: 'en' })
+
+  var timeStart_ms = (new Date()).getTime();
+  var lastTweet_ms = timeStart_ms;
+
+  var gTweetsSinceLastSay = 0;
+  var gDoTweet = argv.doTweet;
+  
+  var sayIt = argv.sayIt;
+  var gLastSayIt_ms = 0;
+  var gSayItMinDifference_ms = 1000 * 10;
+  var gSayItMaxDifference_ms = 2 * gSayItMinDifference_ms;
+  var currentlySpeaking = false;
+
+  stream.on('tweet', function (tweet) {
+//     if (!haveLoggedFull) {
+//       console.log(tweet)
+//       haveLoggedFull = true;
+//     }
+    processTweet({tweet:tweet, trackedThings: trackedThings, 
+                    retweets:false, //whether we include retweets in calculating things at the moment
+                    sayIt: sayIt});
+    //console.log(tweet.user.name + "\t "+ tweet.user.screen_name + "\t " + tweet.created_at + "\t" + tweet.text);
+//    console.log(tweet.user.name + "\t "+ tweet.user.screen_name + "\t " + tweet.text);
+  })
+
+  //every minute or so, tweet something eventually
+
+
+  function doSummarySoFar() {
+
+    var now = (new Date());
+    var now_ms = now.getTime(); 
+
+    var timeForAverage_ms = 1000*60*2; // 15; //15 minutes
+
+    //do running average last N
+    var current = trackedThings.slice();
+    current.forEach(function(t) {
+      var sum = 0;
+      var numberTerms = 0;
+      var avg = 0;
+      //console.log("Length: " + t.results.length);
+      t.results.forEach(function(result) {
+          var p = result.polarity;
+          if (result.time_ms > now_ms - timeForAverage_ms) {
+            if (p !=0) {
+              numberTerms++;
+              sum += p;
+            }
+          }
+          else {
+            //console.log('tweet too old to include');
+          }
+
+      });
+      if (numberTerms>0) {
+         avg = sum/numberTerms;
+      }
+
+      //console.log(now + '\t' + t.term + ': ' + avg.toFixed(1) + ' (' + numberTerms + ' tweets included)');
+
+      if (gDoTweet) {
+//         console.log("DO TWEET");
+        if ( (numberTerms>0) && (now_ms > lastTweet_ms + timeForAverage_ms)) {
+           
+           var s = originalTrack + ': Sentiment ' + avg.toFixed(1) + ' (interval ' + (timeForAverage_ms/1000/60).toFixed(1) + ' minutes, ' + numberTerms + ' tweets included)';
+           T.post('statuses/update', { status:s}, function(err, data, response) {
+           console.log("Tweeted info: " + s);
+            //console.log(data)
+          });
+
+          lastTweet_ms = now_ms;
+
+        }
+      }
+
+    });
+    //purge old ones
+    trackedThings.forEach(function(t) {
+        t.results = t.results.filter(function(r) {
+            return r.time_ms > now_ms - timeForAverage_ms;
+        })      
+    })
+    //console.dir(trackedThings);
+    setTimeout(doSummarySoFar, 10000);
+  }
+
+  
+  setTimeout(doSummarySoFar, 10000);
+
+}
+
+function isDefined(x) {
+  return typeof x !== 'undefined';
+}
+
+function processTweet(config) {
+
+  var now_ms = (new Date()).getTime();
+
+  var tweet = config.tweet;
+
+  if (stringContainsOneOfTheseTerms(tweet.text, ignoredThings)) {
+    return; //don't process it...
+  } 
+  if ((ignoredThings.length>0) && (!stringContainsOneOfTheseTerms(tweet.text, requiredThings))) {
+    return; //don't process it...
+  } 
+
+  var trackedThings = config.trackedThings;
+
+  var user = tweet.user;
+  var rt_status = tweet.retweeted_status;
+
+  var sWhiches = [];
+  trackedThings.forEach(function(t) {
+
+    if (tweet.text.toLowerCase().indexOf(t.term) > -1) {
+      sWhiches.push(t); 
+    }
+
+  });
+
+  if (   (sWhiches.length===0)
+          ||
+         (rt_status && (!(config.retweets===true)))
+      ) {
+     return;
+  }
+
+  gTweetsSinceLastSay++;
+
+  var rt_user;
+  if (rt_status) {
+    rt_user = rt_status.user;
+  }
+
+  tweet.didSayIt = false;
+  if (config && config.sayIt && 
+        ( 
+            ( (!currentlySpeaking)) // && (now_ms > gLastSayIt_ms + gSayItMinDifference_ms))
+            ||
+                (now_ms > gLastSayIt_ms + gSayItMaxDifference_ms) //in case child process gets stuck                
+            )    
+        ) {
+
+    tweet.didSayIt = true;
+    currentlySpeaking = true;
+    gLastSayIt_ms = now_ms; //to prevent others from jumping in
+
+
+    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    //var regexpHashtag = new RegExp('#([^\\s]*)','g');
+    var regexpHashtag = new RegExp('#','g');
+    //var regexpAt = new RegExp('@([^\\s]*)','g');
+
+    var regexpAt = new RegExp('@','g');
+
+    var regexpAmp = new RegExp('&amp;','g');
+    var regexpGt = new RegExp('&gt;','g');
+    var regexpLt = new RegExp('&lt;','g');
+    var regexpRT = new RegExp(' RT ;','g');
+    
+    var s = tweet.text.replace(urlRegex,'');
+    //s = s.replace(regexpHashtag,'hashtag ');
+    s = s.replace(regexpHashtag,'');
+    s = s.replace(regexpRT,' retweet ');
+    //s = s.replace(regexpAt,'at ');
+    //s = s.replace(regexpAt,'to ');
+    s = s.replace(regexpAt,'');
+    s = s.replace(regexpAmp,'&');
+    s = s.replace(regexpGt,'>');
+    s = s.replace(regexpLt,'<');
+
+    s = sms.statement(s);
+
+    //Don't say the user screen name - wastes space I think s = 'User ' + user.screen_name + ' - ' + s;
+
+    gLastSayIt_ms = (new Date()).getTime();
+
+    var voice = getRandomVoice();
+    console.log('');
+    console.log('');
+    console.log('Say (' + voice + ', ' + gTweetsSinceLastSay + ' tweets since): ' + 'User ' + user.screen_name + ' - ' + tweet.text);
+    gTweetsSinceLastSay=0;
+    say.speak(voice, s, function() {
+      currentlySpeaking = false;
+    });
+
+    console.log('');
+    console.log('');
+  
+  }
+
+
+//   var retextSentimizer =   retext().use(sentiment).use(function () {
+    
+//       return function (cst) {
+
+// //       if (cst.data.polarity !=0) {
+
+//         var terms = [];
+
+//         sWhiches.forEach(function(t) {
+
+//           terms.push(t.term);
+//           t.results.push({time_ms: Number(tweet.timestamp_ms), polarity: cst.data.polarity});
+
+//         });
+
+//         console.log((1000*gTweetsSinceLastSay/(0.0000001 + now_ms-gLastSayIt_ms)).toFixed(1) + '\t' + terms.join(',') + '\t' + cst.data.valence + '(' + cst.data.polarity + ') \t' + user.screen_name + 
+//                       '\t'+  ' (' + user.followers_count + 
+//                           ', ' + user.statuses_count + 
+//                           //', ' + ('is_quote_status=' + tweet.is_quote_status) + 
+//                           ', ' + (rt_status ? (rt_status.retweet_count + 'rts - RT ' + rt_status.user.screen_name + ', ' + rt_user.followers_count + ' followers'):'') + ')' +
+//                       '\t'+  cleanTweet(tweet.text)
+//                       );
+
+//                 //console.dir(cst);
+//                 //console.log(inspect(cst));
+// //       }
+//       };
+//   }); //.process(tweet.text);
+
+
+  function makeTweetMoreConversational(tweet) {
+
+    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    //var regexpHashtag = new RegExp('#([^\\s]*)','g');
+    var regexpHashtag = new RegExp('#','g');
+    //var regexpAt = new RegExp('@([^\\s]*)','g');
+
+    var regexpAt = new RegExp('@','g');
+
+    var regexpAmp = new RegExp('&amp;','g');
+    var regexpGt = new RegExp('&gt;','g');
+    var regexpLt = new RegExp('&lt;','g');
+    var regexpRT = new RegExp(' RT ;','g');
+    
+    var s = tweet.text.replace(urlRegex,'');
+    //s = s.replace(regexpHashtag,'hashtag ');
+    s = s.replace(regexpHashtag,'');
+    s = s.replace(regexpRT,' retweet ');
+    //s = s.replace(regexpAt,'at ');
+    //s = s.replace(regexpAt,'to ');
+    s = s.replace(regexpAt,'');
+    s = s.replace(regexpAmp,'&');
+    s = s.replace(regexpGt,'>');
+    s = s.replace(regexpLt,'<');
+
+    s = sms.statement(s);
+  
+    return s;
+
+  }
+
+
+//   //console.log('NLP on tweet');
+//   coreNLP.process(makeTweetMoreConversational(tweet), function(err, result) {
+//     //"document":{"sentences":{"sentence":{"$":{"id":"1","sentimentValue":"4","sentiment":"Verypositive"}
+//     //console.log(JSON.stringify(result, null));
+//     var theSentences = result.document.sentences.sentence;
+//     if (Array.isArray(theSentences)) {
+//       //console.dir(theSentences);
+//       var sum = 0;
+//       theSentences.forEach(function(sentence) {
+//         sum += Number(sentence.$.sentimentValue);
+//       })
+//       //console.log(theSentences[0].$.sentimentValue + ' ' + theSentences[0].$.sentiment + ' ' + tweet.text);
+//       console.log((sum/theSentences.length).toFixed(1) + ' ' + tweet.text);
+//     }
+//     else {
+//       console.log(theSentences.$.sentimentValue + ' ' + theSentences.$.sentiment + ' ' + tweet.text);
+//     }
+//   });
+
+  //get sentiment stuff
+  retext().use(sentiment).use(function () {
+    
+      return function (cst) {
+
+//       if (cst.data.polarity !=0) {
+
+        var terms = [];
+
+        sWhiches.forEach(function(t) {
+
+          terms.push(t.term);
+          t.results.push({time_ms: Number(tweet.timestamp_ms), polarity: cst.data.polarity});
+
+        });
+
+        var userCreatedDate = new Date(user.created_at);
+        var userCreatedDate_ms = userCreatedDate.getTime();
+        var now_ms = new Date().getTime();
+
+        var daysAgoCreated = ((((now_ms - userCreatedDate_ms)/1000)/3600)/24);
+        var tweetsPerDay = user.statuses_count/daysAgoCreated;
+
+        var cleanedTweet = cleanTweet(tweet.text);
+
+        var numberWordsInTweet = tweet.text.split(" ").length;
+
+
+        console.log((1000*gTweetsSinceLastSay/(0.0000001 + now_ms-gLastSayIt_ms)).toFixed(1) + '\t' + 
+                      terms.join(',') + '\t' + cst.data.valence + '(' + cst.data.polarity + ') \t' + 
+                      user.screen_name + 
+                      '\t'+  
+                      ', ' + tweetsPerDay.toFixed(1) + ' tweets/day since ' + (1+userCreatedDate.getMonth()) + "/" + userCreatedDate.getFullYear() +
+                      ', ' + user.followers_count + ' followers ' + 
+                          //', tweets:'  + user.statuses_count + 
+                          //', ' + ('is_quote_status=' + tweet.is_quote_status) + 
+                          //', ' + (rt_status ? (rt_status.retweet_count + 'rts - RT ' + rt_status.user.screen_name + ', ' + rt_user.followers_count + ' followers'):'') + 
+                          //')' +
+                      '\t'+  cleanTweet(tweet.text)
+                      );
+
+
+        for (clientId in clients) {
+
+          // data: {\n
+          // data: "msg": "hello world",\n
+          // data: "id": 12345\n
+          // data: }\n\n
+
+          //timestamp_ms: '1445085128691'
+
+          clients[clientId].write('data: ' + '{\n' +
+                                  'data: "text": "'+ encodeURIComponent(cleanedTweet) + '", \n' +
+                                  'data: "didSayIt":' + tweet.didSayIt + ',\n' +
+                                  'data: "timestamp_ms":' + tweet.timestamp_ms + ',\n' +
+                                  'data: "valence":"' + cst.data.valence + '",\n' +
+                                  'data: "polarity":' + cst.data.polarity + ',\n' +
+                                  'data: "id_str":"' + tweet.id_str + '",\n' +
+                                  'data: "user_name": "' + encodeURIComponent(user.name) + '", \n' +
+                                  'data: "user_screen_name": "' + encodeURIComponent(user.screen_name) + '", \n' +
+                                  'data: "followers":"' + user.followers_count + '",\n' +
+                                  'data: "verified" :'+ user.verified + ',\n' +
+                                  'data: "tweets_per_day":"' + tweetsPerDay + '",\n' +
+                                  'data: "numberWordsInTweet":"' + numberWordsInTweet + '",\n' +
+                                  'data: "tweets_since":"' + ((1+userCreatedDate.getMonth()) + "/" + userCreatedDate.getFullYear() ) + '"\n' +
+                                  'data: }\n\n'); // <- Push a message to a single attached client
+        };
+
+
+                //console.dir(cst);
+                //console.log(inspect(cst));
+//       }
+      };
+  }).process(tweet.text);
+
+//   console.log(sWhiches.join(',') + '\t' + user.screen_name + 
+//                 '\t'+  ' (' + user.followers_count + 
+//                     ', ' + user.statuses_count + 
+//                     //', ' + ('is_quote_status=' + tweet.is_quote_status) + 
+//                     ', ' + (rt_status ? (rt_status.retweet_count + 'rts - RT ' + rt_status.user.screen_name + ', ' + rt_user.followers_count + ' followers'):'') + ')' +
+//                 '\t'+  cleanTweet(tweet.text)
+//                 );
+
+  
+
+}
+
+function cleanTweet(text) {
+  //remove line breaks
+  return text.replace(/(\r\n|\n|\r)/gm,"");
+}
+
+//simple app server stuff
+
+var express = require('express');
+var app = express();
+
+//app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/public_dist'));
+
+// var template = ' \
+// <!DOCTYPE html> <html> <body> \
+//   <script type="text/javascript"> \
+//         var source = new EventSource("/tweets/"); \
+//         source.onmessage = function(e) { \
+//             document.body.innerHTML += e.data + "<br>"; \
+//         }; \
+// </script> </body> </html>';
+
+// app.get('/', function(req, res) {
+//   res.send(template);  // <- Return the static template above
+// });
+
+var clientId = 0;
+var clients = {};  // <- Keep a map of attached clients
+
+var clientTermsId = 0;
+var clientsTerms = {};  // <- Keep a map of attached clients
+
+// Called once for each new client. Note, this response is left open!
+app.get('/tweets/', function(req, res) {
+  //req.socket.setTimeout(Infinity);
+  req.socket.setTimeout(Number.MAX_VALUE);
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',  // <- Important headers
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive'
+    });
+    res.write('\n');
+    (function(clientId) {
+        clients[clientId] = res;  // <- Add this client to those we consider "attached"
+        req.on("close", function(){delete clients[clientId]});  // <- Remove this client when he disconnects
+    })(++clientId)
+});
+
+app.get('/terms/', function(req, res) {
+  //req.socket.setTimeout(Infinity);
+  req.socket.setTimeout(Number.MAX_VALUE);
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',  // <- Important headers
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive'
+    });
+    res.write('\n');
+    (function(clientId) {
+        clientsTerms[clientId] = res;  // <- Add this client to those we consider "attached"
+        req.on("close", function(){delete clientsTerms[clientTermsId]});  // <- Remove this client when he disconnects
+    })(++clientTermsId)
+});
+
+
+setInterval(function(){
+  var msg = originalTrack; //show the raw one... track;
+  //console.log("Clients: " + Object.keys(clients) + " <- " + msg);
+  for (clientTermId in clientsTerms) {
+    clientsTerms[clientTermId].write("data: "+ msg + "\n\n"); // <- Push a message to a single attached client
+  };
+}, 5000);
+
+
+// setInterval(function(){
+//   var msg = Math.random();
+//   console.log("Clients: " + Object.keys(clients) + " <- " + msg);
+//   for (clientId in clients) {
+//     clients[clientId].write("data: "+ msg + "\n\n"); // <- Push a message to a single attached client
+//   };
+// }, 2000);
+
+app.listen(process.env.PORT || 8080);
+
+
+//end simple app server stuff for client
+
+
+// This was a reference tweet to remind myself of the fields
+// { created_at: 'Sat Oct 17 12:32:08 +0000 2015',
+//   id: 655360646066868200,
+//   id_str: '655360646066868224',
+//   text: 'RT @MontieUSA: Be afraid, be very afraid https://t.co/nzBsQ8X72a',
+//   source: '<a href="http://twitter.com/#!/download/ipad" rel="nofollow">Twitter for iPad</a>',
+//   truncated: false,
+//   in_reply_to_status_id: null,
+//   in_reply_to_status_id_str: null,
+//   in_reply_to_user_id: null,
+//   in_reply_to_user_id_str: null,
+//   in_reply_to_screen_name: null,
+//   user: 
+//    { id: 1622493138,
+//      id_str: '1622493138',
+//      name: 'Ann Russell-Day',
+//      screen_name: 'Granny_Day',
+//      location: 'Harlow',
+//      url: null,
+//      description: 'work for Tory MP. Mother and g\'mother. Christian. lived with MS for 35+ years. Tweets own. Retweets not necessarily an endorsement',
+//      protected: false,
+//      verified: false,
+//      followers_count: 588,
+//      friends_count: 441,
+//      listed_count: 37,
+//      favourites_count: 10462,
+//      statuses_count: 27398,
+//      created_at: 'Fri Jul 26 09:27:22 +0000 2013',
+//      utc_offset: null,
+//      time_zone: null,
+//      geo_enabled: true,
+//      lang: 'en-gb',
+//      contributors_enabled: false,
+//      is_translator: false,
+//      profile_background_color: 'ACDED6',
+//      profile_background_image_url: 'http://abs.twimg.com/images/themes/theme18/bg.gif',
+//      profile_background_image_url_https: 'https://abs.twimg.com/images/themes/theme18/bg.gif',
+//      profile_background_tile: false,
+//      profile_link_color: '038543',
+//      profile_sidebar_border_color: 'EEEEEE',
+//      profile_sidebar_fill_color: 'F6F6F6',
+//      profile_text_color: '333333',
+//      profile_use_background_image: true,
+//      profile_image_url: 'http://pbs.twimg.com/profile_images/584370511079202817/y8qLy0Jc_normal.jpg',
+//      profile_image_url_https: 'https://pbs.twimg.com/profile_images/584370511079202817/y8qLy0Jc_normal.jpg',
+//      default_profile: false,
+//      default_profile_image: false,
+//      following: null,
+//      follow_request_sent: null,
+//      notifications: null },
+//   geo: null,
+//   coordinates: null,
+//   place: null,
+//   contributors: null,
+//   retweeted_status: 
+//    { created_at: 'Sat Oct 17 12:29:46 +0000 2015',
+//      id: 655360047992713200,
+//      id_str: '655360047992713216',
+//      text: 'Be afraid, be very afraid https://t.co/nzBsQ8X72a',
+//      source: '<a href="http://twitter.com/download/iphone" rel="nofollow">Twitter for iPhone</a>',
+//      truncated: false,
+//      in_reply_to_status_id: null,
+//      in_reply_to_status_id_str: null,
+//      in_reply_to_user_id: null,
+//      in_reply_to_user_id_str: null,
+//      in_reply_to_screen_name: null,
+//      user: 
+//       { id: 3964865811,
+//         id_str: '3964865811',
+//         name: 'Tim Montgomerie',
+//         screen_name: 'MontieUSA',
+//         location: null,
+//         url: null,
+//         description: 'Where @Montie writes about the USA without boring his largely UK following',
+//         protected: false,
+//         verified: false,
+//         followers_count: 714,
+//         friends_count: 38,
+//         listed_count: 5,
+//         favourites_count: 0,
+//         statuses_count: 12,
+//         created_at: 'Thu Oct 15 11:57:12 +0000 2015',
+//         utc_offset: null,
+//         time_zone: null,
+//         geo_enabled: false,
+//         lang: 'en',
+//         contributors_enabled: false,
+//         is_translator: false,
+//         profile_background_color: 'C0DEED',
+//         profile_background_image_url: 'http://abs.twimg.com/images/themes/theme1/bg.png',
+//         profile_background_image_url_https: 'https://abs.twimg.com/images/themes/theme1/bg.png',
+//         profile_background_tile: false,
+//         profile_link_color: '0084B4',
+//         profile_sidebar_border_color: 'C0DEED',
+//         profile_sidebar_fill_color: 'DDEEF6',
+//         profile_text_color: '333333',
+//         profile_use_background_image: true,
+//         profile_image_url: 'http://pbs.twimg.com/profile_images/654630850949156868/Hq5MiLrc_normal.png',
+//         profile_image_url_https: 'https://pbs.twimg.com/profile_images/654630850949156868/Hq5MiLrc_normal.png',
+//         profile_banner_url: 'https://pbs.twimg.com/profile_banners/3964865811/1445023555',
+//         default_profile: true,
+//         default_profile_image: false,
+//         following: null,
+//         follow_request_sent: null,
+//         notifications: null },
+//      geo: null,
+//      coordinates: null,
+//      place: null,
+//      contributors: null,
+//      quoted_status_id: 655329411160526800,
+//      quoted_status_id_str: '655329411160526849',
+//      quoted_status: 
+//       { created_at: 'Sat Oct 17 10:28:01 +0000 2015',
+//         id: 655329411160526800,
+//         id_str: '655329411160526849',
+//         text: 'Donald Trump\'s building a long-term operation http://t.co/QY1tEzKvFv http://t.co/mC8Y1yDwY8',
+//         source: '<a href="http://www.socialflow.com" rel="nofollow">SocialFlow</a>',
+//         truncated: false,
+//         in_reply_to_status_id: null,
+//         in_reply_to_status_id_str: null,
+//         in_reply_to_user_id: null,
+//         in_reply_to_user_id_str: null,
+//         in_reply_to_screen_name: null,
+//         user: [Object],
+//         geo: null,
+//         coordinates: null,
+//         place: null,
+//         contributors: null,
+//         is_quote_status: false,
+//         retweet_count: 0,
+//         favorite_count: 0,
+//         entities: [Object],
+//         extended_entities: [Object],
+//         favorited: false,
+//         retweeted: false,
+//         possibly_sensitive: false,
+//         filter_level: 'low',
+//         lang: 'en' },
+//      is_quote_status: true,
+//      retweet_count: 1,
+//      favorite_count: 0,
+//      entities: { hashtags: [], urls: [Object], user_mentions: [], symbols: [] },
+//      favorited: false,
+//      retweeted: false,
+//      possibly_sensitive: false,
+//      filter_level: 'low',
+//      lang: 'en' },
+//   is_quote_status: true,
+//   retweet_count: 0,
+//   favorite_count: 0,
+//   entities: 
+//    { hashtags: [],
+//      urls: [ [Object] ],
+//      user_mentions: [ [Object] ],
+//      symbols: [] },
+//   favorited: false,
+//   retweeted: false,
+//   possibly_sensitive: false,
+//   filter_level: 'low',
+//   lang: 'en',
+//   timestamp_ms: '1445085128691' }

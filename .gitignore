@@ -1,0 +1,16 @@
+# Include your project-specific ignores in this file
+# Read about how to use .gitignore: https://help.github.com/articles/ignoring-files
+config.js
+
+.htaccess
+.idea
+.project
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE.md
+doc
+
+.gitattributes
+
+node_modules
+bower_components

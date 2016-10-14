@@ -1,0 +1,39 @@
+
+#heart-area {
+	position:absolute;
+	margin-left:10%;
+	width:80%;
+	height:80%;
+}
+
+.heartline {
+	stroke: none;
+	stroke-width:2;
+	fill: none;
+}
+
+/*.heartline.left {
+	stroke: blue;
+}
+*/
+.heartline-drawn {
+	stroke-width: 2;
+	stroke-opacity:0.8;
+	opacity:0.8;
+	stroke: red;
+	fill: pink;
+	stroke-linejoin: round;
+}
+
+.test-heart-circle {
+	fill:steelblue;
+}
+
+.test-heart-line {
+	stroke:steelblue;
+	stroke-width:2;
+}
+.test-heart-line-g {
+	stroke:black;
+	stroke-width:2;
+}
