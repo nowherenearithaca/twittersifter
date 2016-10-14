@@ -2,7 +2,8 @@
 
 This is a simple node app for watching and hearing tweets.
 
-![alt text](https://github.com/nowherenearithaca/twittersifter/blob/master/Screen%20Shot%202016-10-14%20at%201.07.20%20AM.png "Twitter Sifter Screenshot")
+![alt text](https://github.com/nowherenearithaca/twittersifter/blob/master/twittersifter_screenshot.png
+ "Twitter Sifter Screenshot")
 
 
 
