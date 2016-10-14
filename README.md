@@ -13,7 +13,7 @@ This is a simple node app for watching and hearing tweets.
 
 These will take a few minutes to complete.
 
-`node install`
+`npm install`
 
 `bower install`
 
