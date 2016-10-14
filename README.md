@@ -2,8 +2,7 @@
 
 This is a simple node app for watching and hearing tweets.
 
-![alt text](https://github.com/nowherenearithaca/twittersifter/blob/master/twittersifter_screenshot.png
- "Twitter Sifter Screenshot")
+<img src="https://github.com/nowherenearithaca/twittersifter/blob/master/twittersifter_screenshot.png" width="500px">
 
 
 
@@ -32,7 +31,7 @@ Create a file config.js in the main directory that contains your twitter keys:
 ```
 You can get these by creating an "app" at twitter at https://apps.twitter.com/
 
-### Build the web app side of things
+### Build the web app side of things (Don't forget this!)
 
 `grunt`
 
