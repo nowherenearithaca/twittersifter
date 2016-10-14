@@ -12,6 +12,8 @@ This is a simple node app for watching and hearing tweets.
 
 ### Download the needed node/bower components
 
+These will take a few minutes to complete.
+
 `node install`
 
 `bower install`
