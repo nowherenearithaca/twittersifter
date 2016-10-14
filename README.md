@@ -47,7 +47,7 @@ Open a browser using web address http://localhost:8080
 
 By default, the tweets are "colorified" based on how BeeLine does this - this simply gradually changes the color of each character
 from red to black to blue to black to blue.  This may improve readability for fast-moving text, but other options
-need to be explored (for example, maybe color parts of speech certain ways).
+need to be explored (for example, maybe color parts of speech certain ways).  This can be disabled in the current settings.
 
 
 ## "Interesting" Tweets
