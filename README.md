@@ -37,6 +37,9 @@ You can get these by creating an "app" at twitter at https://apps.twitter.com/
 
 Do this any time you modify files in the public directory.
 
+It puts everything needed for the web side in `public_dist` (creating `public_dist` if necessary).
+
+
 ### Start the server portion
 
 In a command window, start the server portion (this particular example will catch tweets that contain "hello" or "hi"):
