@@ -4,23 +4,15 @@ This is a simple node app for watching and hearing tweets.
 
 <img src="https://github.com/nowherenearithaca/twittersifter/blob/master/twittersifter_screenshot.png" width="500px">
 
-
-
-
 ## Setting things up
 
-1. Download the needed node/bower components
+1\. 	Download the needed node/bower components (these will take a few minutes to complete):
 
-These will take a few minutes to complete.
+	* `npm install`
+    * `bower install`
 
-`npm install`
-
-`bower install`
-
-2. Create config.js
-
-Create a file `config.js` in the main directory that contains your twitter keys:
-
+2\. 	Create config.js
+		* Create a file `config.js` in the main directory that contains your twitter keys:
 ```javascript
   module.exports = {
      "consumer_secret": "your-twitter-consumer-secret",
@@ -29,32 +21,30 @@ Create a file `config.js` in the main directory that contains your twitter keys:
      "access_token_secret": "your-twitter-access-secret"
    };
 ```
-You can get these by creating an "app" at twitter at https://apps.twitter.com/
+		You can get these by creating an "app" at twitter at https://apps.twitter.com/
 
-**WARNING** - Don't commit `config.js` to a public repository!
+		**WARNING** - Don't commit `config.js` to a public repository!
 
 
-3. Build the web app side of things (Don't forget this!)
+3\. Build the web app side of things (Don't forget this!)
 
-`grunt`
+		`grunt`
 
-Do this any time you modify files in the public directory.
+		Do this any time you modify files in the public directory.
 
-It puts everything needed for the web side in `public_dist` (creating `public_dist` if necessary).
+		It puts everything needed for the web side in `public_dist` (creating `public_dist` if necessary).
 
-4. Start the server portion
+4\. Start the server portion
 
-In a command window, start the server portion (this particular example will catch tweets that contain "hello" or "hi"):
+		In a command window, start the server portion (this particular example will catch tweets that contain "hello" or "hi"):
 
-`node twittersifter.js --doStream --track hello,hi`
+		`node twittersifter.js --doStream --track hello,hi`
 
-5. Watch and Listen to Tweets
+5\. Watch and Listen to Tweets
 
-Open a browser using web address http://localhost:8080
+		Open a browser using web address http://localhost:8080
 
-By default, the tweets are "colorified" based on how BeeLine does this - this simply gradually changes the color of each character
-from red to black to blue to black to red.  This may improve readability for fast-moving text, but other options
-need to be explored (for example, maybe color parts of speech certain ways).  This can be disabled in the current settings.
+		By default, the tweets are "colorified" based on how BeeLine does this - this simply gradually changes the color of each character from red to black to blue to black to red.  This may improve readability for fast-moving text, but other options need to be explored (for example, maybe color parts of speech certain ways).  This can be disabled in the current settings.
 
 
 ## "Interesting" Tweets
