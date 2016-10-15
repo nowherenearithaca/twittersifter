@@ -325,6 +325,7 @@ var T = new Twit(config);
   //console.log(track);
 
   //console.log('track: ' + track);
+  //pass the constructed "track" string to the twitter API
   var stream = T.stream('statuses/filter', { track: track, language: 'en' })
 
   var timeStart_ms = (new Date()).getTime();
@@ -365,7 +366,7 @@ var T = new Twit(config);
     var now = (new Date());
     var now_ms = now.getTime(); 
 
-    var timeForAverage_ms = 1000*60*2; // 15; //15 minutes
+    var timeForAverage_ms = 1000*60*2; 
 
     //do running average last N
     var current = trackedThings.slice();
