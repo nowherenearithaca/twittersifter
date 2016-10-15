@@ -4,6 +4,10 @@
 // node twittersifter.js --doStream --sayIt --track hello
 // separate different terms with commas
 
+//All tweets that match the terms are sent to the client.
+//It's up to the client to decide what's "interesting" or not
+
+
 if (!String.prototype.startsWith) {
   String.prototype.startsWith = function(searchString, position) {
     position = position || 0;
@@ -326,8 +330,14 @@ if (argv.doStream) {
   var lastTweet_ms = timeStart_ms;
 
   var gTweetsSinceLastSay = 0;
+
+  //This is if you want it to tweet every now and then with a summary of
+  //  the sentiment for the search terms
   var gDoTweet = argv.doTweet;
   
+  //This is if you want the server side to speak the tweets
+  //I was doing this before I had the browser do it, but can 
+  //  be useful if you don't care about the browser side.
   var sayIt = argv.sayIt;
   var gLastSayIt_ms = 0;
   var gSayItMinDifference_ms = 1000 * 10;
