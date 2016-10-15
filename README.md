@@ -40,7 +40,7 @@ It puts everything needed for the web side in `public_dist` (creating `public_di
 
 In a command window, start the server portion (this particular example will catch tweets that contain "hello" or "hi"):
 
-`node twittersifter.js --doStream --track hello,hi`
+`node twittersifter.js --track hello,hi`
 
 5\. **Watch and Listen to Tweets**
 
