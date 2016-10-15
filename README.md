@@ -25,7 +25,7 @@ Create a file `config.js` in the main directory that contains your twitter keys:
 ```
 You can get these by creating an "app" at twitter at https://apps.twitter.com/
 
-**WARNING** - Don't commit `config.js` to a public repository!
+Don't commit `config.js` to a public repository!
 
 
 3\. **Build the web app side of things**
