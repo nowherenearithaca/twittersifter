@@ -285,7 +285,8 @@ var T = new Twit(config);
 //node bardtwit.js --doStream --track cnn,foxnews
 //node bardtwit.js --doStream --track trump
 //this worked - node bardtwit.js --doStream --track "what is your position"
-if (argv.doStream) { 
+
+//always stream it... if (argv.doStream) { 
 
   //console.dir(argv);
 
@@ -421,7 +422,8 @@ if (argv.doStream) {
   
   setTimeout(doSummarySoFar, 10000);
 
-}
+//was doStream if}
+
 
 function isDefined(x) {
   return typeof x !== 'undefined';
@@ -699,7 +701,8 @@ function cleanTweet(text) {
   return text.replace(/(\r\n|\n|\r)/gm,"");
 }
 
-//simple app server stuff
+////////////////////////////////////////////////////////////////////////////
+//Simple app server stuff
 
 var express = require('express');
 var app = express();
@@ -725,6 +728,8 @@ var clients = {};  // <- Keep a map of attached clients
 
 var clientTermsId = 0;
 var clientsTerms = {};  // <- Keep a map of attached clients
+
+//This is from a sample I found somewhere - need to look that up
 
 // Called once for each new client. Note, this response is left open!
 app.get('/tweets/', function(req, res) {
@@ -779,6 +784,7 @@ app.listen(process.env.PORT || 8080);
 
 
 //end simple app server stuff for client
+/////////////////////////////////////////////////////////////////////////
 
 
 // This was a reference tweet to remind myself of the fields
