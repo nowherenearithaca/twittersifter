@@ -308,6 +308,33 @@ var T = new Twit(config);
 
   var originalTrack = track;
 
+  function getTrackToSendToTwitter(track) {
+
+
+    var things = track.split(',')
+                          .filter(function (t){return t.trim().length>0;})
+                          .map(function(t) {return {term:t, results:[]}}); //
+
+
+    var requiredThings = things.filter(function(t) {return t.term.length>1 && t.term.startsWith("+");})
+                              .map(function(t) {return t.term.toLowerCase().slice(1);});
+
+    var ignoredThings = things.filter(function(t) {return t.term.length>1 && t.term.startsWith("-");})
+                              .map(function(t) {return t.term.toLowerCase().slice(1);});
+
+    //make a hashmap of the things to ignore
+    // var ignoreThingsHash = {};
+    // ignoredThings.forEach(function(t) {
+    //     ignoreThingsHash[t.term.slice(1)] = 1;
+    // });
+
+    var trackedThings = things.filter(function(t) {return !t.term.startsWith("-");});
+
+    return trackedThings.map(function(t) {return t.term;})
+                          .join(","); //put back together the things we want...
+
+  }
+
   var things = track.split(',')
                         .filter(function (t){return t.trim().length>0;})
                         .map(function(t) {return {term:t, results:[]}}); //
@@ -359,18 +386,21 @@ var T = new Twit(config);
   var gSayItMaxDifference_ms = 2 * gSayItMinDifference_ms;
   var currentlySpeaking = false;
 
-  stream.on('tweet', function (tweet) {
-//     if (!haveLoggedFull) {
-//       console.log(tweet)
-//       haveLoggedFull = true;
-//     }
-    processTweet({tweet:tweet, trackedThings: trackedThings, 
-                    retweets:false, //whether we include retweets in calculating things at the moment
-                    sayIt: sayIt});
-    //console.log(tweet.user.name + "\t "+ tweet.user.screen_name + "\t " + tweet.created_at + "\t" + tweet.text);
-//    console.log(tweet.user.name + "\t "+ tweet.user.screen_name + "\t " + tweet.text);
-  })
+  function startStream(stream) {
+    stream.on('tweet', function (tweet) {
+  //     if (!haveLoggedFull) {
+  //       console.log(tweet)
+  //       haveLoggedFull = true;
+  //     }
+      processTweet({tweet:tweet, trackedThings: trackedThings, 
+                      retweets:false, //whether we include retweets in calculating things at the moment
+                      sayIt: sayIt});
+      //console.log(tweet.user.name + "\t "+ tweet.user.screen_name + "\t " + tweet.created_at + "\t" + tweet.text);
+  //    console.log(tweet.user.name + "\t "+ tweet.user.screen_name + "\t " + tweet.text);
+    });
+  }
 
+  startStream(stream);
   //every minute or so, tweet something eventually
 
 
@@ -778,16 +808,55 @@ app.get('/terms/', function(req, res) {
     })(++clientTermsId)
 });
 
+app.get('/setterms', function(req, res) {
 
-setInterval(function(){
-  var msg = originalTrack; //show the raw one... track;
-  //console.log("Clients: " + Object.keys(clients) + " <- " + msg);
-  for (clientTermId in clientsTerms) {
-    clientsTerms[clientTermId].write("data: "+ msg + "\n\n"); // <- Push a message to a single attached client
-  };
-}, 5000);
+  console.log("setterms");
+  console.dir(req.query);
+
+  if (req.query.theterms) {
+
+        var allTerms = req.query.theterms.split('\t').map(function(t){return t;}).join(","); //.join("  ,");
+        var track = getTrackToSendToTwitter(allTerms);
+        console.log("track",track);
+        originalTrack = track; //allTerms;
+        
+        if (stream) {
+          stream.stop();
+        }
+
+        stream = T.stream('statuses/filter', { track: track, language: 'en' });
+        startStream(stream);
+
+        updateClientsAboutWhatIsBeingTracked();
+        // allTerms.forEach(function(t,i) {
+        // console.log(i + ": " + t);
+        // });
+        //set the terms now...
+
+  }
 
 
+  // var user_id = req.param('id');
+  // var token = req.param('token');
+  // var geo = req.param('geo');  
+  res.send("Working to set terms...");
+  //res.send(user_id + ' ' + token + ' ' + geo);
+});
+
+
+//setInterval(function(){
+  function updateClientsAboutWhatIsBeingTracked() {
+    var msg = originalTrack; //show the raw one... track;
+    console.log("Updating clients: '" + msg + "'");
+    //console.log("Clients: " + Object.keys(clients) + " <- " + msg);
+    for (clientTermId in clientsTerms) {
+      clientsTerms[clientTermId].write("data: "+ msg + "\n\n"); // <- Push a message to a single attached client
+    };
+};
+//}, 5000);
+
+
+updateClientsAboutWhatIsBeingTracked(); //call at beginning
 // setInterval(function(){
 //   var msg = Math.random();
 //   console.log("Clients: " + Object.keys(clients) + " <- " + msg);

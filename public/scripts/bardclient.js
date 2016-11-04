@@ -1009,10 +1009,39 @@ else {
 // });
 //var horizontalTicker = $('#horizontal-ticker');
 var currentIndex = 0; //keeping up with ones added
+var gIsAddingFromOnMessage = false;
+
+//set up some stuff with tags input here
+var tags$ = $("#current-terms-tags");
+
+tags$.on('beforeItemAdd', function(event) {
+    console.log("beforeItemAdd: " + event.item + ", gIsAddingFromOnMessage = " + gIsAddingFromOnMessage);
+  // event.item: contains the item
+  // event.cancel: set to true to prevent the item getting added
+  if (gIsAddingFromOnMessage) {
+
+  }
+  else {
+      //gather up the current terms and send them in
+
+      var terms = tags$.tagsinput('items');
+      terms.push(event.item);
+      var params = encodeURIComponent(terms.join('\t'));
+
+
+
+      var url = "http://localhost:8080/setterms?theterms=" + params;
+      d3.xhr(url)
+        .get(function(error, data) {
+          console.log(data);
+        });
+
+  }
+});
 
 
 sourceTerms.onmessage = function(e) {
-	//console.log(e.data);
+	console.log("e.data", e.data);
 	var theArray = e.data.split(",");
 
 	$("#current-terms").html(theArray.map(function(t) {
@@ -1021,7 +1050,9 @@ sourceTerms.onmessage = function(e) {
 
   $("#current-terms-tags").tagsinput('removeAll');
   theArray.forEach(function(tag) {
-    $("#current-terms-tags").tagsinput('add', tag);
+    gIsAddingFromOnMessage=true;
+      $("#current-terms-tags").tagsinput('add', tag);
+    gIsAddingFromOnMessage=false;
   });
 
 	//ignore the ones with "-", remove the "+" in front of any
