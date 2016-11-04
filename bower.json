@@ -25,6 +25,7 @@
     "jquery": "~2.1.4",
     "font-awesome": "~4.5.0",
     "d3": "~3.5.12",
-    "seiyria-bootstrap-slider": "~6.0.4"
+    "seiyria-bootstrap-slider": "~6.0.4",
+    "bootstrap-tagsinput": "~0.8.0"
   }
 }
