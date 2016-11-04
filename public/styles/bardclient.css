@@ -24,6 +24,8 @@
 *//*	border-bottom:1px solid #888;*/
 	min-height:20px;
 
+  display:none;
+
 }
 #current-terms .highlighted {
 	padding-left:4px;
@@ -655,6 +657,7 @@ a.user-name-link {
 }
 
 #btnPause {
+  margin-top:5px;
   padding-right: 2px;
   float:left;
 }
@@ -662,6 +665,7 @@ a.user-name-link {
 .current-stats {
   font-size:80%;
 }
+
 
 .navbar-brand {
   padding-top:10px;
@@ -734,5 +738,18 @@ a.user-name-link {
 }
 .interest-initial-stats {
   margin:0 !important;
+}
+
+.bootstrap-tagsinput {
+}
+
+.bootstrap-tagsinput span {
+  font-size:16px !important;
+  font-weight: normal;
+  display: inline-block;
+}
+
+span.tag {
+  margin-top:0;
 }
 

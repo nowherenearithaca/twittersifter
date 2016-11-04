@@ -1019,6 +1019,11 @@ sourceTerms.onmessage = function(e) {
 		return "<span class='highlighted'>" + decodeURIComponent(t) + "</span>";		
 	}).join("&nbsp;"));
 
+  $("#current-terms-tags").tagsinput('removeAll');
+  theArray.forEach(function(tag) {
+    $("#current-terms-tags").tagsinput('add', tag);
+  });
+
 	//ignore the ones with "-", remove the "+" in front of any
 	theTermsRegExp = e.data.split(",")
 							.map(function(t) {return decodeURIComponent(t.trim()).replace('+','');})

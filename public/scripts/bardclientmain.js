@@ -187,6 +187,10 @@ $(document).ready(function() {
        bardClient.setInterestThreshold(this.value); // or $(this).val()
     });
 
+    $('#current-terms-tags').tagsinput({
+      tagClass: 'label label-primary'
+    });
+
     // With JQuery
     var currentInterestThreshold = $('#show-interest-threshold-value');
     var interestThresholdSlider =  $('#interesting-tweet-threshold-slider')

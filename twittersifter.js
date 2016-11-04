@@ -286,6 +286,14 @@ var T = new Twit(config);
 //node bardtwit.js --doStream --track trump
 //this worked - node bardtwit.js --doStream --track "what is your position"
 
+//see about mixing in the user's home timeline
+//NOTE - doesn't seem as straightforward here...
+// T.get("https://api.twitter.com/1.1/statuses/home_timeline.json",config,function (err, data, response) {
+//   console.log(err);
+//   console.log(data);
+//   console.log(response);
+// })
+
 //always stream it... if (argv.doStream) { 
 
   //console.dir(argv);
@@ -332,6 +340,11 @@ var T = new Twit(config);
   var lastTweet_ms = timeStart_ms;
 
   var gTweetsSinceLastSay = 0;
+
+  var logTweetsToConsole = true;
+  if (argv.noLogTweet) {
+    logTweetsToConsole=false;
+  }
 
   //This is if you want it to tweet every now and then with a summary of
   //  the sentiment for the search terms
@@ -638,18 +651,20 @@ function processTweet(config) {
         var numberWordsInTweet = tweet.text.split(" ").length;
 
 
-        console.log((1000*gTweetsSinceLastSay/(0.0000001 + now_ms-gLastSayIt_ms)).toFixed(1) + '\t' + 
-                      terms.join(',') + '\t' + cst.data.valence + '(' + cst.data.polarity + ') \t' + 
-                      user.screen_name + 
-                      '\t'+  
-                      ', ' + tweetsPerDay.toFixed(1) + ' tweets/day since ' + (1+userCreatedDate.getMonth()) + "/" + userCreatedDate.getFullYear() +
-                      ', ' + user.followers_count + ' followers ' + 
-                          //', tweets:'  + user.statuses_count + 
-                          //', ' + ('is_quote_status=' + tweet.is_quote_status) + 
-                          //', ' + (rt_status ? (rt_status.retweet_count + 'rts - RT ' + rt_status.user.screen_name + ', ' + rt_user.followers_count + ' followers'):'') + 
-                          //')' +
-                      '\t'+  cleanTweet(tweet.text)
-                      );
+        if (logTweetsToConsole) {
+          console.log((1000*gTweetsSinceLastSay/(0.0000001 + now_ms-gLastSayIt_ms)).toFixed(1) + '\t' + 
+                        terms.join(',') + '\t' + cst.data.valence + '(' + cst.data.polarity + ') \t' + 
+                        user.screen_name + 
+                        '\t'+  
+                        ', ' + tweetsPerDay.toFixed(1) + ' tweets/day since ' + (1+userCreatedDate.getMonth()) + "/" + userCreatedDate.getFullYear() +
+                        ', ' + user.followers_count + ' followers ' + 
+                            //', tweets:'  + user.statuses_count + 
+                            //', ' + ('is_quote_status=' + tweet.is_quote_status) + 
+                            //', ' + (rt_status ? (rt_status.retweet_count + 'rts - RT ' + rt_status.user.screen_name + ', ' + rt_user.followers_count + ' followers'):'') + 
+                            //')' +
+                        '\t'+  cleanTweet(tweet.text)
+                        );
+      }
 
 
         for (clientId in clients) {
