@@ -1028,7 +1028,18 @@ returnedStuff.addTerm = function(term) {
   //get current terms
   var terms = [];
 
-  terms.push(term);
+  //split on "," in case they did that
+  if (term) {
+  var extraTerms = term.split(",");
+    extraTerms.forEach(function(t) {
+    
+      if (t.trim().length>0) {
+        terms.push(t.trim()); //term);
+      }
+
+    });
+  }
+  
   $(".current-term").each(function(d) {
     terms.push( $(this).text());
   });
@@ -1070,9 +1081,18 @@ function sendNewTerms(terms) {
   //$("#what-sent-to-server").html(params);
 
   console.log("Sending params",params);
-  var url = "http://localhost:8080/setterms?theterms=" + params;
+
+  var url = window.location.protocol + "//" + 
+                            window.location.hostname + 
+                            (window.location.port ? ':' + window.location.port: '');
+
+  url += "/setterms?theterms=" + params;
+
+  //console.log("url is '" + url + "'");
+
   d3.xhr(url)
     .get(function(error, data) {
+      //console.log(error);
       console.log(data);
     });
 }
@@ -1107,7 +1127,7 @@ $("#current-terms").on("click",".current-term-btn",function() {
 
 sourceTerms.onmessage = function(e) {
 
-	console.log("e.data", e.data);
+	//console.log("e.data", e.data);
 
 
 	var theArray = e.data.split(",");

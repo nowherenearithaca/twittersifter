@@ -195,6 +195,13 @@ $(document).ready(function() {
 
 
 
+    $(".btn-add-new-term").on("click", function() {
+        var theVal = $('#the-new-term').val();
+        //console.log("theVal", theVal);
+        bardClient.addTerm(theVal);
+        $('#the-new-term').val(""); //clear it...
+    });
+
     $('#the-new-term').keypress(function(event){
         var keycode = (event.keyCode ? event.keyCode : event.which);
         console.log(keycode);

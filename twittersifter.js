@@ -15,6 +15,32 @@ if (!String.prototype.startsWith) {
   };
 }
 
+function getRandomInt(min, max, rnd) {
+  rnd = rnd || Math.random;
+  return Math.floor(rnd() * (max - min + 1)) + min;
+}
+
+function stringContainsOneOfTheseTerms(s, terms) {
+  var i;
+
+  s = s.toLowerCase();
+  for (i=0;i<terms.length;i++) {
+    if (s.indexOf(terms[i]) > -1) {
+      return true;
+    }
+  }
+  return false;
+
+}
+
+function isDefined(x) {
+  return typeof x !== 'undefined';
+}
+
+
+
+
+
 
 // testing using everything related to NFL
 function getAllNFLTracking() {
@@ -80,18 +106,46 @@ function getAllNFLTracking() {
 
 }
 
-function stringContainsOneOfTheseTerms(s, terms) {
-  var i;
 
-  s = s.toLowerCase();
-  for (i=0;i<terms.length;i++) {
-    if (s.indexOf(terms[i]) > -1) {
-      return true;
-    }
-  }
-  return false;
-
+function cleanTweet(text) {
+  //remove line breaks
+  return text.replace(/(\r\n|\n|\r)/gm,"");
 }
+
+
+ function makeTweetMoreConversational(tweet) {
+
+    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    //var regexpHashtag = new RegExp('#([^\\s]*)','g');
+    var regexpHashtag = new RegExp('#','g');
+    //var regexpAt = new RegExp('@([^\\s]*)','g');
+
+    var regexpAt = new RegExp('@','g');
+
+    var regexpAmp = new RegExp('&amp;','g');
+    var regexpGt = new RegExp('&gt;','g');
+    var regexpLt = new RegExp('&lt;','g');
+    var regexpRT = new RegExp(' RT ;','g');
+    
+    var s = tweet.text.replace(urlRegex,'');
+    //s = s.replace(regexpHashtag,'hashtag ');
+    s = s.replace(regexpHashtag,'');
+    s = s.replace(regexpRT,' retweet ');
+    //s = s.replace(regexpAt,'at ');
+    //s = s.replace(regexpAt,'to ');
+    s = s.replace(regexpAt,'');
+    s = s.replace(regexpAmp,'&');
+    s = s.replace(regexpGt,'>');
+    s = s.replace(regexpLt,'<');
+
+    s = sms.statement(s);
+  
+    return s;
+
+  }
+
+
+//**********************************************
 
 var retext = require('retext');
 //not used anymore... var inspect = require('unist-util-inspect');
@@ -117,23 +171,24 @@ var path = require('path');
 
 // };
 
-//issue with java stuff atm and weird error installing "java" module ld: library not found for -lgcc_s.10.5
-//hitting memory error thing to deal with - I think it's worth figuring out... 
-//var coreNLP = new NLP.StanfordNLP(config);
-//wait - do I even need java npm?  stanford thing got its own thing for it
+//Old note:
+  //issue with java stuff atm and weird error installing "java" module ld: library not found for -lgcc_s.10.5
+  //hitting memory error thing to deal with - I think it's worth figuring out... 
+  //var coreNLP = new NLP.StanfordNLP(config);
+  //wait - do I even need java npm?  stanford thing has its own thing for it
 
-//coreNLP.loadPipelineSync(); //this was overwriting my options defined above...
-// coreNLP.process('This is so good.', function(err, result) {
-//   console.log(err,JSON.stringify(result,null));
-// });
+  //coreNLP.loadPipelineSync(); //this was overwriting my options defined above...
+  // coreNLP.process('This is so good.', function(err, result) {
+  //   console.log(err,JSON.stringify(result,null));
+  // });
 
 var say = require('say');
 var SmsLingo = require('smslingo');
 var sms = new SmsLingo();
 var argv = require('yargs').argv;
 
-//this file should be of this form
 
+//The file config.js should be of this form
 // Include your access information below
 // module.exports = {
 //   "consumer_secret": "your-twitter-consumer-secret",
@@ -146,7 +201,7 @@ var config = require('./config.js');
 
 var Twit = require('twit')
 
-//Set up the speaking voices...
+//Set up the speaking voices on the server side
 var voices = [];
 //voices.push('Agnes'); //a little unpleasant
 //voices.push('Kathy');
@@ -159,11 +214,6 @@ voices.push('Fred');
 voices.push('Junior');
 //voices.push('Bruce');
 //voices.push('Ralph');
-
-function getRandomInt(min, max, rnd) {
-  rnd = rnd || Math.random;
-  return Math.floor(rnd() * (max - min + 1)) + min;
-}
 
 function getRandomVoice() {
   var index = getRandomInt(0,voices.length-1);
@@ -306,20 +356,23 @@ var T = new Twit(config);
     track = getAllNFLTracking();
   }
 
-  var originalTrack = track;
+  //forget this... since will be sending from client var originalTrack = track;
 
-  function getTrackToSendToTwitter(track) {
+  var requiredThings;
+  var ignoredThings;
+  var trackedThingsArrayStructure;
 
+  function getTrackToSendToTwitter(trackStringCommaDelimited) {
 
-    var things = track.split(',')
+    var things = trackStringCommaDelimited.split(',')
                           .filter(function (t){return t.trim().length>0;})
                           .map(function(t) {return {term:t, results:[]}}); //
 
 
-    var requiredThings = things.filter(function(t) {return t.term.length>1 && t.term.startsWith("+");})
+    requiredThings = things.filter(function(t) {return t.term.length>1 && t.term.startsWith("+");})
                               .map(function(t) {return t.term.toLowerCase().slice(1);});
 
-    var ignoredThings = things.filter(function(t) {return t.term.length>1 && t.term.startsWith("-");})
+    ignoredThings = things.filter(function(t) {return t.term.length>1 && t.term.startsWith("-");})
                               .map(function(t) {return t.term.toLowerCase().slice(1);});
 
     //make a hashmap of the things to ignore
@@ -328,13 +381,14 @@ var T = new Twit(config);
     //     ignoreThingsHash[t.term.slice(1)] = 1;
     // });
 
-    var trackedThings = things.filter(function(t) {return !t.term.startsWith("-");});
+    trackedThingsArrayStructure = things.filter(function(t) {return !t.term.startsWith("-");});
 
-    return trackedThings.map(function(t) {return t.term;})
+    return trackedThingsArrayStructure.map(function(t) {return t.term;})
                           .join(","); //put back together the things we want...
 
   }
 
+  /*
   var things = track.split(',')
                         .filter(function (t){return t.trim().length>0;})
                         .map(function(t) {return {term:t, results:[]}}); //
@@ -353,17 +407,19 @@ var T = new Twit(config);
   // });
 
   var trackedThings = things.filter(function(t) {return !t.term.startsWith("-");});
+  */
 
-  track = trackedThings.map(function(t) {return t.term;})
-                          .join(","); //put back together the things we want...
-  var stream;
+  var trackStringForTwitter = getTrackToSendToTwitter(track);
+        //trackedThings.map(function(t) {return t.term;})
+        //                  .join(","); //put back together the things we want...
+  var streamToTwitter;
   //if (trackedThings.length > 0) {
 
     //console.log(track);
 
     //console.log('track: ' + track);
     //pass the constructed "track" string to the twitter API
-    stream = T.stream('statuses/filter', { track: track, language: 'en' });
+  //set up below... stream = T.stream('statuses/filter', { track: track, language: 'en' });
 
   //}
 
@@ -390,107 +446,125 @@ var T = new Twit(config);
   var gSayItMaxDifference_ms = 2 * gSayItMinDifference_ms;
   var currentlySpeaking = false;
 
-  function startStream(stream) {
+  function startStream(stream, trackedThingsForTwitterAPI) {
 
     if (stream) {
 
-      console.log("setting up stream to process tweets");
+      //console.log("setting up stream to process tweets");
       stream.on('tweet', function (tweet) {
     //     if (!haveLoggedFull) {
     //       console.log(tweet)
     //       haveLoggedFull = true;
     //     }
-        processTweet({tweet:tweet, trackedThings: trackedThings, 
+        //console.log("process tweet");
+        //console.log(trackedThingsForTwitterAPI.split(","));
+        processTweet({tweet:tweet, trackedThings: trackedThingsForTwitterAPI, 
+                        trackedThingsArray:trackedThingsArrayStructure,
                         retweets:false, //whether we include retweets in calculating things at the moment
                         sayIt: sayIt});
         //console.log(tweet.user.name + "\t "+ tweet.user.screen_name + "\t " + tweet.created_at + "\t" + tweet.text);
     //    console.log(tweet.user.name + "\t "+ tweet.user.screen_name + "\t " + tweet.text);
       });
+
+      stream.on('limit', function (limitMessage) {
+        //this is an info thing that twitter did not provide all of the tweets
+        // { limit: { track: 8, timestamp_ms: '1478354620889' } }
+        //console.log("Limit",limitMessage);
+      });
+
     }
     else {
       console.log("no stream");
     }
 
+
   }
 
-  startStream(stream);
+  streamToTwitter = T.stream('statuses/filter', { track: trackStringForTwitter, language: 'en' });
+  startStream(streamToTwitter, trackStringForTwitter); //track);
+
   //every minute or so, tweet something eventually
-
-
   function doSummarySoFar() {
 
-    var now = (new Date());
-    var now_ms = now.getTime(); 
+    return; //return to this after other stuff cleaned up
 
-    var timeForAverage_ms = 1000*60*2; 
+//     var now = (new Date());
+//     var now_ms = now.getTime(); 
 
-    //do running average last N
-    var current = trackedThings.slice();
-    current.forEach(function(t) {
-      var sum = 0;
-      var numberTerms = 0;
-      var avg = 0;
-      //console.log("Length: " + t.results.length);
-      t.results.forEach(function(result) {
-          var p = result.polarity;
-          if (result.time_ms > now_ms - timeForAverage_ms) {
-            if (p !=0) {
-              numberTerms++;
-              sum += p;
-            }
-          }
-          else {
-            //console.log('tweet too old to include');
-          }
+//     var timeForAverage_ms = 1000*60*2; 
 
-      });
-      if (numberTerms>0) {
-         avg = sum/numberTerms;
-      }
+//     //do running average last N
+//     var current = trackStringForTwitter.split(",").slice();
+//     current.forEach(function(t) {
+//       var sum = 0;
+//       var numberTerms = 0;
+//       var avg = 0;
+//       //console.log("Length: " + t.results.length);
+//       t.results.forEach(function(result) {
+//           var p = result.polarity;
+//           if (result.time_ms > now_ms - timeForAverage_ms) {
+//             if (p !=0) {
+//               numberTerms++;
+//               sum += p;
+//             }
+//           }
+//           else {
+//             //console.log('tweet too old to include');
+//           }
 
-      //console.log(now + '\t' + t.term + ': ' + avg.toFixed(1) + ' (' + numberTerms + ' tweets included)');
+//       });
+//       if (numberTerms>0) {
+//          avg = sum/numberTerms;
+//       }
 
-      if (gDoTweet) {
-//         console.log("DO TWEET");
-        if ( (numberTerms>0) && (now_ms > lastTweet_ms + timeForAverage_ms)) {
+//       //console.log(now + '\t' + t.term + ': ' + avg.toFixed(1) + ' (' + numberTerms + ' tweets included)');
+
+//       if (gDoTweet) {
+// //         console.log("DO TWEET");
+//         if ( (numberTerms>0) && (now_ms > lastTweet_ms + timeForAverage_ms)) {
            
-           var s = originalTrack + ': Sentiment ' + avg.toFixed(1) + ' (interval ' + (timeForAverage_ms/1000/60).toFixed(1) + ' minutes, ' + numberTerms + ' tweets included)';
-           T.post('statuses/update', { status:s}, function(err, data, response) {
-           console.log("Tweeted info: " + s);
-            //console.log(data)
-          });
+//            var s = trackedThingsForTwitterAPI + ': Sentiment ' + avg.toFixed(1) + ' (interval ' + (timeForAverage_ms/1000/60).toFixed(1) + ' minutes, ' + numberTerms + ' tweets included)';
+//            T.post('statuses/update', { status:s}, function(err, data, response) {
+//            console.log("Tweeted info: " + s);
+//             //console.log(data)
+//           });
 
-          lastTweet_ms = now_ms;
+//           lastTweet_ms = now_ms;
 
-        }
-      }
+//         }
+//       }
 
-    });
-    //purge old ones
-    trackedThings.forEach(function(t) {
-        t.results = t.results.filter(function(r) {
-            return r.time_ms > now_ms - timeForAverage_ms;
-        })      
-    })
-    //console.dir(trackedThings);
-    setTimeout(doSummarySoFar, 10000);
+//     });
+//     //purge old ones
+//     if (trackedThings) {
+//       trackedThings.forEach(function(t) {
+//           t.results = t.results.filter(function(r) {
+//               return r.time_ms > now_ms - timeForAverage_ms;
+//           })      
+//       })
+//     }
+//     //console.dir(trackedThings);
+//     setTimeout(doSummarySoFar, 10000);
   }
 
-  
   setTimeout(doSummarySoFar, 10000);
 
 //was doStream if}
 
 
-function isDefined(x) {
-  return typeof x !== 'undefined';
-}
-
 function processTweet(config) {
+
+        // processTweet({tweet:tweet, trackedThings: trackedThingsForTwitterAPI, 
+        //                 trackedThingsArray:trackedThingsForTwitterAPI.split(","),
+        //                 retweets:false, //whether we include retweets in calculating things at the moment
+        //                 sayIt: sayIt});
+
+
 
   var now_ms = (new Date()).getTime();
 
   var tweet = config.tweet;
+  var tweetLowerCase = config.tweet.text.toLowerCase();
 
   if (stringContainsOneOfTheseTerms(tweet.text, ignoredThings)) {
     return; //don't process it...
@@ -499,15 +573,18 @@ function processTweet(config) {
     return; //don't process it...
   } 
 
-  var trackedThings = config.trackedThings;
+  var trackedThingsArray = config.trackedThingsArray; // = trackedThingsForTwitterAPI; //config.trackedThings;
+
+  //console.log(trackedThingsArray.join(","));
 
   var user = tweet.user;
   var rt_status = tweet.retweeted_status;
 
   var sWhiches = [];
-  trackedThings.forEach(function(t) {
 
-    if (tweet.text.toLowerCase().indexOf(t.term) > -1) {
+  trackedThingsArray.forEach(function(t) {
+
+    if (tweetLowerCase.indexOf(t.term) > -1) {
       sWhiches.push(t); 
     }
 
@@ -615,37 +692,7 @@ function processTweet(config) {
 //   }); //.process(tweet.text);
 
 
-  function makeTweetMoreConversational(tweet) {
-
-    var urlRegex = /(https?:\/\/[^\s]+)/g;
-    //var regexpHashtag = new RegExp('#([^\\s]*)','g');
-    var regexpHashtag = new RegExp('#','g');
-    //var regexpAt = new RegExp('@([^\\s]*)','g');
-
-    var regexpAt = new RegExp('@','g');
-
-    var regexpAmp = new RegExp('&amp;','g');
-    var regexpGt = new RegExp('&gt;','g');
-    var regexpLt = new RegExp('&lt;','g');
-    var regexpRT = new RegExp(' RT ;','g');
-    
-    var s = tweet.text.replace(urlRegex,'');
-    //s = s.replace(regexpHashtag,'hashtag ');
-    s = s.replace(regexpHashtag,'');
-    s = s.replace(regexpRT,' retweet ');
-    //s = s.replace(regexpAt,'at ');
-    //s = s.replace(regexpAt,'to ');
-    s = s.replace(regexpAt,'');
-    s = s.replace(regexpAmp,'&');
-    s = s.replace(regexpGt,'>');
-    s = s.replace(regexpLt,'<');
-
-    s = sms.statement(s);
-  
-    return s;
-
-  }
-
+ 
 
 //   //console.log('NLP on tweet');
 //   coreNLP.process(makeTweetMoreConversational(tweet), function(err, result) {
@@ -755,10 +802,6 @@ function processTweet(config) {
 
 }
 
-function cleanTweet(text) {
-  //remove line breaks
-  return text.replace(/(\r\n|\n|\r)/gm,"");
-}
 
 ////////////////////////////////////////////////////////////////////////////
 //Simple app server stuff
@@ -829,23 +872,23 @@ app.get('/setterms', function(req, res) {
   var allTerms = (req.query.theterms) ? req.query.theterms.split('\t').map(function(t){return t;}).join(",")
                                       :"";
                                        //.join("  ,");
-  var track = getTrackToSendToTwitter(allTerms);
-  console.log("track",track);
-  originalTrack = track; //allTerms;
+  trackStringForTwitter = getTrackToSendToTwitter(allTerms);
+  //console.log("track",trackStringForTwitter);
+  //originalTrack = track; //allTerms;
   
   //why isn't this working when it was previously blank?
-  if (stream) {
-    stream.stop();
+  if (streamToTwitter) {
+    streamToTwitter.stop();
   }
 
-  if (track.trim().length > 0) {
-    T = new Twit(config);
-    console.log("new track",track);
-    stream = T.stream('statuses/filter', { track: track, language: 'en' });
-    startStream(stream);
+  if (trackStringForTwitter.trim().length > 0) {
+    //T = new Twit(config);
+    //console.log("new track",trackStringForTwitter);
+    streamToTwitter = T.stream('statuses/filter', { track: trackStringForTwitter, language: 'en' });
+    startStream(streamToTwitter, trackStringForTwitter);
   }
 
-  updateClientsAboutWhatIsBeingTracked(track);
+  updateClientsAboutWhatIsBeingTracked(trackStringForTwitter);
         // allTerms.forEach(function(t,i) {
         // console.log(i + ": " + t);
         // });
@@ -869,7 +912,7 @@ function updateClientsAboutWhatIsBeingTracked(tracked) {
   }
 }
 
-setInterval(function(){updateClientsAboutWhatIsBeingTracked(originalTrack);},
+setInterval(function(){updateClientsAboutWhatIsBeingTracked(trackStringForTwitter);},
               5000);
 
 
