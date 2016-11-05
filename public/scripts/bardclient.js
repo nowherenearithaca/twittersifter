@@ -1118,7 +1118,7 @@ sourceTerms.onmessage = function(e) {
   		// return "<span class='highlighted'>" + decodeURIComponent(t) + "</span>";		
       return "<div class='current-term-btn btn btn-primary btn-sm'>" + 
               '<div class="current-term">' + decodeURIComponent(t) + "</div>" +
-              '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>' +
+              '<span class="remove-current-term glyphicon glyphicon-remove" aria-hidden="true"></span>' +
               "</div>";    
   	}).join("&nbsp;"));
   }

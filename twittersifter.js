@@ -300,7 +300,7 @@ var T = new Twit(config);
 
   var haveLoggedFull = false;
 
-  var track = argv.track || ""; //shakespeare";
+  var track = argv.track || "happy birthday"; //shakespeare";
 
   if (track==="allnfl") {
     track = getAllNFLTracking();
@@ -833,12 +833,17 @@ app.get('/setterms', function(req, res) {
   console.log("track",track);
   originalTrack = track; //allTerms;
   
+  //why isn't this working when it was previously blank?
   if (stream) {
     stream.stop();
   }
 
-  stream = T.stream('statuses/filter', { track: track, language: 'en' });
-  startStream(stream);
+  if (track.trim().length > 0) {
+    T = new Twit(config);
+    console.log("new track",track);
+    stream = T.stream('statuses/filter', { track: track, language: 'en' });
+    startStream(stream);
+  }
 
   updateClientsAboutWhatIsBeingTracked(track);
         // allTerms.forEach(function(t,i) {

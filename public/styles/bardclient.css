@@ -641,9 +641,11 @@ a.user-name-link {
 }
 
 #btnPause {
-  margin-top:5px;
-  padding-right: 2px;
+  margin-top:2px;
+/*  padding-right: 2px;*/
+  margin-right:8px;
   float:left;
+  width:40px;
 }
 
 .current-stats {
@@ -741,8 +743,8 @@ span.tag {
 #current-terms {
   display:block;
   min-height:20px;
-  margin-top:3px;
-  margin-left:80px;
+  margin-top:5px;
+  margin-left:85px;
 }
 
 #current-terms .highlighted {
@@ -760,3 +762,8 @@ span.tag {
   font-size:14px;
 }
 
+.remove-current-term {
+  display:inline-block;
+  margin-top:3px;
+  margin-left:2px;
+}
