@@ -1,5 +1,8 @@
 
 
+//ugh - the problem with letting client side change it is that you can quickly get rate limited
+//      where twitter waits a minute before sending tweets again...
+
 //Basic usage:
 // node twittersifter.js --doStream --sayIt --track hello
 // separate different terms with commas
@@ -446,17 +449,22 @@ var T = new Twit(config);
   var gSayItMaxDifference_ms = 2 * gSayItMinDifference_ms;
   var currentlySpeaking = false;
 
-  function startStream(stream, trackedThingsForTwitterAPI) {
+  function startStream( trackedThingsForTwitterAPI) {
 
-    if (stream) {
+    // if (stream) {
+
+
+      console.log("starting to get tweets - " + trackedThingsForTwitterAPI);
+
+      var streamToTwitter = T.stream('statuses/filter', { track: trackedThingsForTwitterAPI, language: 'en' });
 
       //console.log("setting up stream to process tweets");
-      stream.on('tweet', function (tweet) {
+      streamToTwitter.on('tweet', function (tweet) {
     //     if (!haveLoggedFull) {
     //       console.log(tweet)
     //       haveLoggedFull = true;
     //     }
-        //console.log("process tweet");
+        console.log("about to call process tweet");
         //console.log(trackedThingsForTwitterAPI.split(","));
         processTweet({tweet:tweet, trackedThings: trackedThingsForTwitterAPI, 
                         trackedThingsArray:trackedThingsArrayStructure,
@@ -466,22 +474,24 @@ var T = new Twit(config);
     //    console.log(tweet.user.name + "\t "+ tweet.user.screen_name + "\t " + tweet.text);
       });
 
-      stream.on('limit', function (limitMessage) {
+      streamToTwitter.on('limit', function (limitMessage) {
         //this is an info thing that twitter did not provide all of the tweets
         // { limit: { track: 8, timestamp_ms: '1478354620889' } }
-        //console.log("Limit",limitMessage);
+        console.log("Limit",limitMessage);
       });
 
-    }
-    else {
-      console.log("no stream");
-    }
+    //}
+    // else {
+    //   console.log("no stream");
+    // }
 
+    return streamToTwitter;
 
   }
 
-  streamToTwitter = T.stream('statuses/filter', { track: trackStringForTwitter, language: 'en' });
-  startStream(streamToTwitter, trackStringForTwitter); //track);
+  var streamToTwitter = startStream(trackStringForTwitter);
+  //T.stream('statuses/filter', { track: trackStringForTwitter, language: 'en' });
+  //startStream(streamToTwitter, trackStringForTwitter); //track);
 
   //every minute or so, tweet something eventually
   function doSummarySoFar() {
@@ -561,6 +571,8 @@ function processTweet(config) {
 
 
 
+  console.log("in processTweet", config.tweet.text);
+
   var now_ms = (new Date()).getTime();
 
   var tweet = config.tweet;
@@ -594,7 +606,11 @@ function processTweet(config) {
           ||
          (rt_status && (!(config.retweets===true)))
       ) {
-     return;
+
+      //console.log("sWhiches.length: " + sWhiches.length + " (" + tweet.text + ")");
+
+      return;
+
   }
 
   gTweetsSinceLastSay++;
@@ -866,10 +882,10 @@ app.get('/terms/', function(req, res) {
 
 app.get('/setterms', function(req, res) {
 
-  console.log("setterms");
+  //console.log("setterms");
   console.dir(req.query);
 
-  var allTerms = (req.query.theterms) ? req.query.theterms.split('\t').map(function(t){return t;}).join(",")
+  var allTerms = (req.query.theterms) ? req.query.theterms.split('\t').map(function(t){return t.trim();}).join(",")
                                       :"";
                                        //.join("  ,");
   trackStringForTwitter = getTrackToSendToTwitter(allTerms);
@@ -881,11 +897,14 @@ app.get('/setterms', function(req, res) {
     streamToTwitter.stop();
   }
 
+  console.log("trackStringForTwitter: " + trackStringForTwitter);
+
   if (trackStringForTwitter.trim().length > 0) {
     //T = new Twit(config);
     //console.log("new track",trackStringForTwitter);
-    streamToTwitter = T.stream('statuses/filter', { track: trackStringForTwitter, language: 'en' });
-    startStream(streamToTwitter, trackStringForTwitter);
+    //streamToTwitter = T.stream('statuses/filter', { track: trackStringForTwitter, language: 'en' });
+    console.log("Will call startStream")
+    streamToTwitter = startStream(trackStringForTwitter);
   }
 
   updateClientsAboutWhatIsBeingTracked(trackStringForTwitter);
@@ -905,7 +924,7 @@ app.get('/setterms', function(req, res) {
 
 function updateClientsAboutWhatIsBeingTracked(tracked) {
   //var msg = originalTrack; //show the raw one... track;
-  console.log("Updating clients: '" + tracked + "'");
+  //console.log("Updating clients: '" + tracked + "'");
   //console.log("Clients: " + Object.keys(clients) + " <- " + msg);
   for (clientTermId in clientsTerms) {
     clientsTerms[clientTermId].write("data: "+ tracked + "\n\n"); // <- Push a message to a single attached client
