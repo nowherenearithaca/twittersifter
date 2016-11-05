@@ -15,22 +15,6 @@
 	border-radius: 3px;
 }
 
-#current-terms {
-
-/*	font-size:150%;*/
-	float:left;
-/*	margin-top:10px;
-	padding-bottom:10px;
-*//*	border-bottom:1px solid #888;*/
-	min-height:20px;
-
-  display:none;
-
-}
-#current-terms .highlighted {
-	padding-left:4px;
-	padding-right:4px;
-}
 
 
 .glyphicon-heart  {
@@ -741,6 +725,7 @@ a.user-name-link {
 }
 
 .bootstrap-tagsinput {
+  width:100%;
 }
 
 .bootstrap-tagsinput span {
@@ -751,5 +736,27 @@ a.user-name-link {
 
 span.tag {
   margin-top:0;
+}
+
+#current-terms {
+  display:block;
+  min-height:20px;
+  margin-top:3px;
+  margin-left:80px;
+}
+
+#current-terms .highlighted {
+  padding-left:4px;
+  padding-right:4px;
+}
+
+
+.add-new-term-input-group {
+  width:300px;
+}
+
+.current-term {
+  display: inline-block;
+  font-size:14px;
 }
 

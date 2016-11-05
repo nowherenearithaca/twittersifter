@@ -60,11 +60,24 @@
 
         <div class="container">
 
-        <button id="btnPause" type="button" class="sentiment-bar-row-thing btn btn-default btn-xs ">
+        <button id="btnPause" type="button" class="sentiment-bar-row-thing btn btn-default btn-sm ">
                 <span class="glyphicon glyphicon-pause"></span>
         </button>     
+<!--         <input id="add-new-term-input" type="text" value=""/>
+ -->
+        <div class="input-group add-new-term-input-group">
+          <div class="input-group-btn">
+            <button type="button" class="btn btn-default">+</button>
+            <!-- Buttons -->
+          </div>
+          <input type="text" placeholder="Enter search term" id="the-new-term" class="form-control" aria-label="...">
+        </div>
+
+
+<!--         <input id="current-terms-tags" type="text" value="" data-role="tagsinput" />
+ -->
         <div class="sentiment-bar-row-thing" id="current-terms"></div>
-        <input id="current-terms-tags" type="text" value="" data-role="tagsinput" />
+        <div class="" id="what-sent-to-server"></div>
 
         <div class="stat-term" style="position:relative;">
 
