@@ -52,7 +52,7 @@ In a command window, start the server portion
 
 `node twittersifter.js --track hello,hi`
 
-This example will catch tweets that contain "hello" or "hi". You can also omit `--track` and then set terms from the client.
+The example above will catch tweets that contain "hello" or "hi". You can also omit `--track` and then set terms from the client.
 
 
 7\. **Watch and Listen to Tweets**
