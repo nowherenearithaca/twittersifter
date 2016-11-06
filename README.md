@@ -66,7 +66,7 @@ By default, the tweets are "colorified" based on how BeeLine does this - this si
 
 This currently uses Cynthia Whissel's "dictionary with imagery", where words were assigned
  pleasantness, activation, and imagery scores.
- This dictionary is used here with perission of C. Whissel.
+ This dictionary is used here with permission of C. Whissel.
   Commercial use of this dictionary is not permitted.  Check with 
 	C. Whissel at cwhissell@laurentian.ca regarding such uses of her dictionary.
 
