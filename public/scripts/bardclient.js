@@ -1028,6 +1028,29 @@ function sendBasedOnCurrent() {
 
 }
 
+
+returnedStuff.setTerms = function(terms) {
+
+  //remove any spaces...
+  console.log("Terms", terms);
+  var theTerms = terms.split(",")
+                      .map(function(t) { return t.trim();});
+
+  // console.log(theTerms);
+  // //not a function for some reasons... theTerms = theTerms.join(",");
+
+  // var s = "";
+  // theTerms.forEach(function(t) {
+  //   if (s.length > 0) {
+  //     s += ",";
+  //   }
+  //   s += t;
+  // });
+
+  sendNewTerms(theTerms);
+
+};
+
 returnedStuff.addTerm = function(term) {
 
   //get current terms
@@ -1143,7 +1166,7 @@ sourceStatusInfo.onmessage = function(e) {
   var now =  moment().format("h:mm:ss a"); 
 
   if (type && type === "Limit") {
-    
+
     $("#limit-info .date").html(now);
     $("#limit-info .message").html(message);
 
@@ -1179,7 +1202,7 @@ sourceTerms.onmessage = function(e) {
   if ( (theArray.length > 0) && (theArray[0].trim().length>0)) {
   	$("#current-terms").html(theArray.map(function(t) {
   		// return "<span class='highlighted'>" + decodeURIComponent(t) + "</span>";		
-      return "<div class='current-term-btn btn btn-primary btn-sm'>" + 
+      return "<div class='current-term-btn btn btn-primary btn-xs'>" + 
               '<div class="current-term">' + decodeURIComponent(t) + "</div>" +
               '<span class="remove-current-term glyphicon glyphicon-remove" aria-hidden="true"></span>' +
               "</div>";    

@@ -745,6 +745,8 @@ span.tag {
   min-height:20px;
   margin-top:5px;
   margin-left:85px;
+  max-height:250px;
+  overflow-y: auto;
 }
 
 #current-terms .highlighted {
@@ -757,9 +759,14 @@ span.tag {
   width:400px;
 }
 
+.current-term-btn {
+  margin-bottom:5px;
+  font-size:80%;
+}
+
 .current-term {
   display: inline-block;
-  font-size:14px;
+/*  font-size:14px;*/
 }
 
 .remove-current-term {
@@ -791,5 +798,10 @@ span.tag {
 
 }
 
+#presets-dropdown {
 
+  margin-bottom:12px;
+
+
+}
 

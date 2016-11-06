@@ -99,7 +99,113 @@ e[0]+'"');l=e[2].split(",");for(var u=0,t=l.length;u<t;u++){p=l[u].match(h);if(n
 
 /* jshint ignore:end */
 
+
+function getAllNFLTracking() {
+
+  var s = "nfl";
+  s += "," + "officials";
+  s += "," + "refs";
+  s += "," + "packers";
+  s += "," + "greenbay";
+  s += "," + "cowboys";
+  s += "," + "redskin";
+  s += "," + "eagles";
+  s += "," + "giants";
+  s += "," + "cardinals";
+
+  s += "," + "steelers";
+  s += "," + "titans";
+  s += "," + "chargers";
+  s += "," + "vikings";
+  s += "," + "jets";
+  s += "," + "raiders";
+
+  s += "," + "dolphins";
+  s += "," + "falcons";
+  s += "," + "texans";
+
+  s += "," + "rams";
+
+  s += "," + "bears";
+
+  s += "," + "chiefs";
+
+  s += "," + "carolina";
+  s += "," + "patriots";
+
+  s += "," + "seahawks";
+
+  s += "," + "49ers";
+
+  s += "," + "broncos";
+
+  s += "," + "ravens";
+
+  s += "," + "bills";
+
+  s += "," + "panthers";
+
+  s += "," + "lions";
+
+  s += "," + "colts";
+
+  s += "," + "browns";
+
+  s += "," + "jaguars";
+
+  s += "," + "saints";
+
+  s += "," + "bengals";
+  s += "," + "tampa bay";
+  s += "," + "buccaneers";
+
+  return s;
+
+}
+
+function addPreset(ul$, name, terms) {
+
+    var s = "<li role='presentation' class='search-preset-li'>";
+
+    s += "<a class='search-preset' role='menuitem' terms='" + terms + "'>";
+    s += name;
+    s += "</a>";
+
+// $dropdown.append('<li role="presentation" ' +  isHiddenClass + '  >' +
+//                       '<a role="menuitem" filename="' + 'samples' + '/' + filename + '" ' +
+//                         //' specialname= "' + opts.specialName + '" ' +
+//                         ' sourceurl="' + opts.sourceUrl + '" ' +
+//                         ' sourcename="' + encodeURI(opts.sourceName) + '" ' + ' maxbirthyear="' + maxBirthYear + '" ' +
+//                          ' minbirthyear="' + minBirthYear + '" ' + ' isForDescendantTree="' + (opts.isForDescendantTree===true) + '" ' +
+//                          ' isBible="' + (opts.isBible===true) + '" ' +
+//                         ' approximate-birth="' + approximateBirthYear + '" ' +
+//                         ' gedcom_id="' + id + '" source="' + sourceUrl + '">' + name + '</a></li>');
+
+ 
+    s += "</li>";
+
+    ul$.append(s);
+
+}
+
 var bardClient; //so I can test some things - otherwise it is hidden in the closure
+
+function setUpPresets() {
+
+    var ul$ = $("#search-presets");
+
+    addPreset(ul$, "Blank", "");
+    addPreset(ul$, "All NFL", getAllNFLTracking());
+    addPreset(ul$, "Cable News", "cnn,fox,msnbc");
+
+    $('#search-presets a').click(function(){
+        var el = $(this);
+        var terms = el.attr("terms");
+        bardClient.setTerms(terms);
+    });
+
+}
+
 /* global BardClient */ 
 $(document).ready(function() {
 
@@ -214,6 +320,9 @@ $(document).ready(function() {
             //alert('You pressed a "enter" key in textbox, here submit your form'); 
         }
     });
+
+    //add and configure the presets
+    setUpPresets();
 
     //end tags stuff
     // With JQuery

@@ -361,7 +361,7 @@ function getRandomVoice() {
 
   function sendStatusMessageToClients(msg, type) {
 
-    console.log("sendStatusMessageToClients: " + msg);
+    //console.log("sendStatusMessageToClients: " + msg);
 
     for (var clientId in clientsStatusInfo) {
 
