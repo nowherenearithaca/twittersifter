@@ -7,9 +7,9 @@ This is a simple node app for watching and hearing tweets.
 ## Setting things up
 
 
-1\.     **Make sure you have `node` installed for your operating system - you can get it from https://nodejs.org/en/download/**
+1.     **Make sure you have `node` installed for your operating system - you can get it from https://nodejs.org/en/download/**
 
-1\.     **With `npm` (which is installed with `node`), install bower and grunt:**
+1.     **With `npm` (which is installed with `node`), install bower and grunt:**
 
  `npm install -g bower`
 
