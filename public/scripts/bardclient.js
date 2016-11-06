@@ -1143,10 +1143,16 @@ sourceStatusInfo.onmessage = function(e) {
   $("#status-info .date").html(now);
   $("#status-info .message").html(message);
 
-  d3.select("#status-info")
-      .style("opacity",1)
-      .transition()
-        .duration(20*1000).style("opacity",0);
+  $("#status-info").stop()
+                    .css("opacity",1)
+                    .animate({opacity:0}, 20*1000);
+
+  //it won't stop the transition when doing a new one when it is still fading out                  
+  // d3.select("#status-info")
+  //     .transition() //supposed to stop current transition
+  //     .style("opacity",1)
+  //     .transition()
+  //       .duration(20*1000).style("opacity",0);
 
 };
 
