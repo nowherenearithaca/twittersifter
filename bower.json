@@ -18,7 +18,8 @@
   ],
   "dependencies": {
     "bootstrap": "~3.3.6",
-    "clipboard": "~1.5.5"
+    "clipboard": "~1.5.5",
+    "moment": "~2.15.2"
   },
   "devDependencies": {
     "bootstrap": "~3.3.6",

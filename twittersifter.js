@@ -1,7 +1,7 @@
 
 
 //ugh - the problem with letting client side change it is that you can quickly get rate limited
-//      where twitter waits a minute before sending tweets again...
+//      where twitter waits a minute before sending tweets again... 
 
 //Basic usage:
 // node twittersifter.js --doStream --sayIt --track hello
@@ -41,11 +41,8 @@ function isDefined(x) {
 }
 
 
-
-
-
-
 // testing using everything related to NFL
+// use "allnfl" as tracking to get all of this
 function getAllNFLTracking() {
 
   var s = "nfl";
@@ -156,7 +153,6 @@ var sentiment = require('retext-sentiment');
 
 //this one should be better
 //var NLP = require('stanford-corenlp');
-//Brad-Lyons-iMac:bardbot bradflyon$ export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home
 
 //var config = {"nlpPath":"./corenlp","version":"3.4"};
 var path = require('path');
@@ -199,172 +195,53 @@ var argv = require('yargs').argv;
 //   "access_token": "your-twitter-access-token",
 //   "access_token_secret": "your-twitter-access-secret"
 // };
-
 var config = require('./config.js');
 
 var Twit = require('twit')
+var T = new Twit(config);
 
 //Set up the speaking voices on the server side
-var voices = [];
-//voices.push('Agnes'); //a little unpleasant
-//voices.push('Kathy');
-//not nice voices.push('Princess');
-//voices.push('Vicki');
-voices.push('Victoria'); //eastern europish
-//voices.push('Albert');
-voices.push('Alex');
-voices.push('Fred');
-voices.push('Junior');
-//voices.push('Bruce');
-//voices.push('Ralph');
+  var voices = [];
+  //voices.push('Agnes'); //a little unpleasant
+  //voices.push('Kathy');
+  //not nice voices.push('Princess');
+  //voices.push('Vicki');
+  voices.push('Victoria'); //eastern europish
+  //voices.push('Albert');
+  voices.push('Alex');
+  voices.push('Fred');
+  voices.push('Junior');
+  //voices.push('Bruce');
+  //voices.push('Ralph');
 
 function getRandomVoice() {
   var index = getRandomInt(0,voices.length-1);
   return voices[index];
 }
-var T = new Twit(config);
 
-// This is some basic info on the use of Twit
-// {
-//     consumer_key:         '...'
-//   , consumer_secret:      '...'
-//   , access_token:         '...'
-//   , access_token_secret:  '...'
-// })
-
-//
-//  tweet 'hello world!'
-//
-// T.post('statuses/update', { status: 'Hello at ' +  (new Date()) }, function(err, data, response) {
-//   console.log("Updated status");
-//   console.log(data)
-// })
-
-//until
-//Returns tweets created before the given date. Date should be formatted as YYYY-MM-DD. 
-// Keep in mind that the search index has a 7-day limit. In other words, no tweets will be found for a date older than one week.
-//Example Values: 2015-07-19
-//
-//  search twitter for all tweets containing the word 'banana' since Nov. 11, 2011
-//
-// T.get('search/tweets', { q: 'shakespeare until:2010-11-11', count: 100 }, function(err, data, response) {
-//   console.log(data)
-// })
-
-//
-//  get the list of user id's that follow @tolga_tezel
-//
-// T.get('followers/ids', { screen_name: 'tolga_tezel' },  function (err, data, response) {
-//   console.log(data)
-// })
-
-//
-//  retweet a tweet with id '343360866131001345'
-//
-// T.post('statuses/retweet/:id', { id: '343360866131001345' }, function (err, data, response) {
-//   console.log(data)
-// })
-
-//
-//  destroy a tweet with id '343360866131001345'
-//
-// T.post('statuses/destroy/:id', { id: '343360866131001345' }, function (err, data, response) {
-//   console.log(data)
-// })
-
-//
-// get `funny` twitter users
-//
-// T.get('users/suggestions/:slug', { slug: 'twitter' }, function (err, data, response) {
-//   console.log("Got suggestions");
-//   console.log(data)
-// })
-
-// T.get('users/suggestions/:slug', { slug: 'shakespeare' }, function (err, data, response) {
-//   console.log(data)
-// })
-
-
-//
-// post a tweet with media
-//
-// var b64content = fs.readFileSync('/path/to/img', { encoding: 'base64' })
-
-// // first we must post the media to Twitter
-// T.post('media/upload', { media_data: b64content }, function (err, data, response) {
-
-//   // now we can reference the media and post a tweet (media will attach to the tweet)
-//   var mediaIdStr = data.media_id_string
-//   var params = { status: 'loving life #nofilter', media_ids: [mediaIdStr] }
-
-//   T.post('statuses/update', params, function (err, data, response) {
-//     console.log(data)
-//   })
-// })
-
-//
-//  stream a sample of public statuses
-//
-// var stream = T.stream('statuses/sample')
-
-// stream.on('tweet', function (tweet) {
-//   console.log(tweet)
-// })
-
-//
-//  filter the twitter public stream by the word 'mango'.
-//
-// var stream = T.stream('statuses/filter', { track: 'shakespeare' })
-
-// stream.on('tweet', function (tweet) {
-//   console.log(tweet)
-// })
-
-//
-// filter the public stream by the latitude/longitude bounded box of San Francisco
-//
-// var sanFrancisco = [ '-122.75', '36.8', '-121.75', '37.8' ]
-
-// var stream = T.stream('statuses/filter', { locations: sanFrancisco })
-
-// stream.on('tweet', function (tweet) {
-//   console.log(tweet)
-// })
-
-//
-// filter the public stream by english tweets containing `#apple`
-//
-
-//node bardtwit.js --doStream --track cnn,foxnews
-//node bardtwit.js --doStream --track trump
-//this worked - node bardtwit.js --doStream --track "what is your position"
 
 //see about mixing in the user's home timeline
-//NOTE - doesn't seem as straightforward here...
-// T.get("https://api.twitter.com/1.1/statuses/home_timeline.json",config,function (err, data, response) {
-//   console.log(err);
-//   console.log(data);
-//   console.log(response);
-// })
+  //NOTE - doesn't seem as straightforward here...
+  // T.get("https://api.twitter.com/1.1/statuses/home_timeline.json",config,function (err, data, response) {
+  //   console.log(err);
+  //   console.log(data);
+  //   console.log(response);
+  // })
 
-//always stream it... if (argv.doStream) { 
 
-  //console.dir(argv);
+  //used this once to see the full thing returned from the streaming api var haveLoggedFull = false;
 
-  var haveLoggedFull = false;
-
-  var track = argv.track || "happy birthday"; //shakespeare";
+  var track = argv.track || "happy birthday"; // default is just something to always get results
 
   if (track==="allnfl") {
     track = getAllNFLTracking();
   }
 
-  //forget this... since will be sending from client var originalTrack = track;
-
   var requiredThings;
   var ignoredThings;
   var trackedThingsArrayStructure;
 
+  //TODO get rid of the side-effect changes
   function getTrackToSendToTwitter(trackStringCommaDelimited) {
 
     var things = trackStringCommaDelimited.split(',')
@@ -378,12 +255,7 @@ var T = new Twit(config);
     ignoredThings = things.filter(function(t) {return t.term.length>1 && t.term.startsWith("-");})
                               .map(function(t) {return t.term.toLowerCase().slice(1);});
 
-    //make a hashmap of the things to ignore
-    // var ignoreThingsHash = {};
-    // ignoredThings.forEach(function(t) {
-    //     ignoreThingsHash[t.term.slice(1)] = 1;
-    // });
-
+  
     trackedThingsArrayStructure = things.filter(function(t) {return !t.term.startsWith("-");});
 
     return trackedThingsArrayStructure.map(function(t) {return t.term;})
@@ -391,49 +263,17 @@ var T = new Twit(config);
 
   }
 
-  /*
-  var things = track.split(',')
-                        .filter(function (t){return t.trim().length>0;})
-                        .map(function(t) {return {term:t, results:[]}}); //
-
-
-  var requiredThings = things.filter(function(t) {return t.term.length>1 && t.term.startsWith("+");})
-                            .map(function(t) {return t.term.toLowerCase().slice(1);});
-
-  var ignoredThings = things.filter(function(t) {return t.term.length>1 && t.term.startsWith("-");})
-                            .map(function(t) {return t.term.toLowerCase().slice(1);});
-
-  //make a hashmap of the things to ignore
-  // var ignoreThingsHash = {};
-  // ignoredThings.forEach(function(t) {
-  //     ignoreThingsHash[t.term.slice(1)] = 1;
-  // });
-
-  var trackedThings = things.filter(function(t) {return !t.term.startsWith("-");});
-  */
-
+  //some more initial set up
   var trackStringForTwitter = getTrackToSendToTwitter(track);
-        //trackedThings.map(function(t) {return t.term;})
-        //                  .join(","); //put back together the things we want...
   var streamToTwitter;
-  //if (trackedThings.length > 0) {
-
-    //console.log(track);
-
-    //console.log('track: ' + track);
-    //pass the constructed "track" string to the twitter API
-  //set up below... stream = T.stream('statuses/filter', { track: track, language: 'en' });
-
-  //}
-
   var timeStart_ms = (new Date()).getTime();
   var lastTweet_ms = timeStart_ms;
 
   var gTweetsSinceLastSay = 0;
 
-  var logTweetsToConsole = true;
-  if (argv.noLogTweet) {
-    logTweetsToConsole=false;
+  var logTweetsToConsole = false;
+  if (argv.doLogTweet) {
+    logTweetsToConsole=true;
   }
 
   //This is if you want it to tweet every now and then with a summary of
@@ -451,9 +291,6 @@ var T = new Twit(config);
 
   function startStream( trackedThingsForTwitterAPI) {
 
-    // if (stream) {
-
-
       console.log("starting to get tweets - " + trackedThingsForTwitterAPI);
 
       var streamToTwitter = T.stream('statuses/filter', { track: trackedThingsForTwitterAPI, language: 'en' });
@@ -464,7 +301,7 @@ var T = new Twit(config);
     //       console.log(tweet)
     //       haveLoggedFull = true;
     //     }
-        console.log("about to call process tweet");
+        //console.log("about to call process tweet");
         //console.log(trackedThingsForTwitterAPI.split(","));
         processTweet({tweet:tweet, trackedThings: trackedThingsForTwitterAPI, 
                         trackedThingsArray:trackedThingsArrayStructure,
@@ -477,18 +314,65 @@ var T = new Twit(config);
       streamToTwitter.on('limit', function (limitMessage) {
         //this is an info thing that twitter did not provide all of the tweets
         // { limit: { track: 8, timestamp_ms: '1478354620889' } }
-        console.log("Limit",limitMessage);
+        // not logging this to console... console.log("Limit",limitMessage);
       });
 
-    //}
-    // else {
-    //   console.log("no stream");
-    // }
+      streamToTwitter.on('reconnect', function (request, response, connectInterval) {
+          //...
+          if (response.statusCode === 420) {
+            //twitter says to "Enhance your calm" and back off
+            sendStatusMessageToClients("Hold on - twitter is now rate limiting - must wait before reconnecting again...")
+          }
+      });
+
+      streamToTwitter.on('connected', function (request, response, connectInterval) {
+            sendStatusMessageToClients("Connected to twitter api...")
+      });
 
     return streamToTwitter;
 
   }
 
+  function sendStatusMessageToClients(msg) {
+
+    console.log("sendStatusMessageToClients: " + msg);
+
+    for (var clientId in clientsStatusInfo) {
+
+          // data: {\n
+          // data: "msg": "hello world",\n
+          // data: "id": 12345\n
+          // data: }\n\n
+
+          //timestamp_ms: '1445085128691'
+
+          clientsStatusInfo[clientId].write('data: ' + '{\n' +
+                                  'data: "message": "'+ msg + '" \n' +
+                                  'data: }\n\n'); // <- Push a message to a single attached client
+        };
+
+
+          // clients[clientId].write('data: ' + '{\n' +
+          //                         'data: "text": "'+ encodeURIComponent(cleanedTweet) + '", \n' +
+          //                         'data: "didSayIt":' + tweet.didSayIt + ',\n' +
+          //                         'data: "timestamp_ms":' + tweet.timestamp_ms + ',\n' +
+          //                         'data: "valence":"' + cst.data.valence + '",\n' +
+          //                         'data: "polarity":' + cst.data.polarity + ',\n' +
+          //                         'data: "id_str":"' + tweet.id_str + '",\n' +
+          //                         'data: "user_name": "' + encodeURIComponent(user.name) + '", \n' +
+          //                         'data: "user_screen_name": "' + encodeURIComponent(user.screen_name) + '", \n' +
+          //                         'data: "followers":"' + user.followers_count + '",\n' +
+          //                         'data: "verified" :'+ user.verified + ',\n' +
+          //                         'data: "tweets_per_day":"' + tweetsPerDay + '",\n' +
+          //                         'data: "numberWordsInTweet":"' + numberWordsInTweet + '",\n' +
+          //                         'data: "tweets_since":"' + ((1+userCreatedDate.getMonth()) + "/" + userCreatedDate.getFullYear() ) + '"\n' +
+          //                         'data: }\n\n'); // <- Push a message to a single attached client
+
+
+
+  }
+
+  //This is the initial startup 
   var streamToTwitter = startStream(trackStringForTwitter);
   //T.stream('statuses/filter', { track: trackStringForTwitter, language: 'en' });
   //startStream(streamToTwitter, trackStringForTwitter); //track);
@@ -562,21 +446,16 @@ var T = new Twit(config);
 //was doStream if}
 
 
-function processTweet(config) {
+//This is the main method that will handle processing a tweet returned from the 
+//  streaming api.
+function processTweet(opts) {
 
-        // processTweet({tweet:tweet, trackedThings: trackedThingsForTwitterAPI, 
-        //                 trackedThingsArray:trackedThingsForTwitterAPI.split(","),
-        //                 retweets:false, //whether we include retweets in calculating things at the moment
-        //                 sayIt: sayIt});
-
-
-
-  console.log("in processTweet", config.tweet.text);
+  //console.log("in processTweet", config.tweet.text);
 
   var now_ms = (new Date()).getTime();
 
-  var tweet = config.tweet;
-  var tweetLowerCase = config.tweet.text.toLowerCase();
+  var tweet = opts.tweet;
+  var tweetLowerCase = opts.tweet.text.toLowerCase();
 
   if (stringContainsOneOfTheseTerms(tweet.text, ignoredThings)) {
     return; //don't process it...
@@ -585,13 +464,14 @@ function processTweet(config) {
     return; //don't process it...
   } 
 
-  var trackedThingsArray = config.trackedThingsArray; // = trackedThingsForTwitterAPI; //config.trackedThings;
+  var trackedThingsArray = opts.trackedThingsArray; // = trackedThingsForTwitterAPI; //config.trackedThings;
 
   //console.log(trackedThingsArray.join(","));
 
   var user = tweet.user;
   var rt_status = tweet.retweeted_status;
 
+  //make sure it contains at least one of the desired terms
   var sWhiches = [];
 
   trackedThingsArray.forEach(function(t) {
@@ -621,7 +501,7 @@ function processTweet(config) {
   }
 
   tweet.didSayIt = false;
-  if (config && config.sayIt && 
+  if (opts && opts.sayIt && 
         ( 
             ( (!currentlySpeaking)) // && (now_ms > gLastSayIt_ms + gSayItMinDifference_ms))
             ||
@@ -632,7 +512,6 @@ function processTweet(config) {
     tweet.didSayIt = true;
     currentlySpeaking = true;
     gLastSayIt_ms = now_ms; //to prevent others from jumping in
-
 
     var urlRegex = /(https?:\/\/[^\s]+)/g;
     //var regexpHashtag = new RegExp('#([^\\s]*)','g');
@@ -675,66 +554,34 @@ function processTweet(config) {
     console.log('');
     console.log('');
   
-  }
+  } //if we say it or not on the server side
 
 
-//   var retextSentimizer =   retext().use(sentiment).use(function () {
-    
-//       return function (cst) {
-
-// //       if (cst.data.polarity !=0) {
-
-//         var terms = [];
-
-//         sWhiches.forEach(function(t) {
-
-//           terms.push(t.term);
-//           t.results.push({time_ms: Number(tweet.timestamp_ms), polarity: cst.data.polarity});
-
-//         });
-
-//         console.log((1000*gTweetsSinceLastSay/(0.0000001 + now_ms-gLastSayIt_ms)).toFixed(1) + '\t' + terms.join(',') + '\t' + cst.data.valence + '(' + cst.data.polarity + ') \t' + user.screen_name + 
-//                       '\t'+  ' (' + user.followers_count + 
-//                           ', ' + user.statuses_count + 
-//                           //', ' + ('is_quote_status=' + tweet.is_quote_status) + 
-//                           ', ' + (rt_status ? (rt_status.retweet_count + 'rts - RT ' + rt_status.user.screen_name + ', ' + rt_user.followers_count + ' followers'):'') + ')' +
-//                       '\t'+  cleanTweet(tweet.text)
-//                       );
-
-//                 //console.dir(cst);
-//                 //console.log(inspect(cst));
-// //       }
-//       };
-//   }); //.process(tweet.text);
 
 
- 
+  //   //console.log('NLP on tweet');
+  //   coreNLP.process(makeTweetMoreConversational(tweet), function(err, result) {
+  //     //"document":{"sentences":{"sentence":{"$":{"id":"1","sentimentValue":"4","sentiment":"Verypositive"}
+  //     //console.log(JSON.stringify(result, null));
+  //     var theSentences = result.document.sentences.sentence;
+  //     if (Array.isArray(theSentences)) {
+  //       //console.dir(theSentences);
+  //       var sum = 0;
+  //       theSentences.forEach(function(sentence) {
+  //         sum += Number(sentence.$.sentimentValue);
+  //       })
+  //       //console.log(theSentences[0].$.sentimentValue + ' ' + theSentences[0].$.sentiment + ' ' + tweet.text);
+  //       console.log((sum/theSentences.length).toFixed(1) + ' ' + tweet.text);
+  //     }
+  //     else {
+  //       console.log(theSentences.$.sentimentValue + ' ' + theSentences.$.sentiment + ' ' + tweet.text);
+  //     }
+  //   });
 
-//   //console.log('NLP on tweet');
-//   coreNLP.process(makeTweetMoreConversational(tweet), function(err, result) {
-//     //"document":{"sentences":{"sentence":{"$":{"id":"1","sentimentValue":"4","sentiment":"Verypositive"}
-//     //console.log(JSON.stringify(result, null));
-//     var theSentences = result.document.sentences.sentence;
-//     if (Array.isArray(theSentences)) {
-//       //console.dir(theSentences);
-//       var sum = 0;
-//       theSentences.forEach(function(sentence) {
-//         sum += Number(sentence.$.sentimentValue);
-//       })
-//       //console.log(theSentences[0].$.sentimentValue + ' ' + theSentences[0].$.sentiment + ' ' + tweet.text);
-//       console.log((sum/theSentences.length).toFixed(1) + ' ' + tweet.text);
-//     }
-//     else {
-//       console.log(theSentences.$.sentimentValue + ' ' + theSentences.$.sentiment + ' ' + tweet.text);
-//     }
-//   });
-
-  //get sentiment stuff
+  //get sentiment stuff and send stuff to clients
   retext().use(sentiment).use(function () {
     
       return function (cst) {
-
-//       if (cst.data.polarity !=0) {
 
         var terms = [];
 
@@ -772,7 +619,6 @@ function processTweet(config) {
                         );
       }
 
-
         for (clientId in clients) {
 
           // data: {\n
@@ -799,25 +645,19 @@ function processTweet(config) {
                                   'data: }\n\n'); // <- Push a message to a single attached client
         };
 
-
-                //console.dir(cst);
-                //console.log(inspect(cst));
-//       }
       };
   }).process(tweet.text);
 
-//   console.log(sWhiches.join(',') + '\t' + user.screen_name + 
-//                 '\t'+  ' (' + user.followers_count + 
-//                     ', ' + user.statuses_count + 
-//                     //', ' + ('is_quote_status=' + tweet.is_quote_status) + 
-//                     ', ' + (rt_status ? (rt_status.retweet_count + 'rts - RT ' + rt_status.user.screen_name + ', ' + rt_user.followers_count + ' followers'):'') + ')' +
-//                 '\t'+  cleanTweet(tweet.text)
-//                 );
+  //   console.log(sWhiches.join(',') + '\t' + user.screen_name + 
+  //                 '\t'+  ' (' + user.followers_count + 
+  //                     ', ' + user.statuses_count + 
+  //                     //', ' + ('is_quote_status=' + tweet.is_quote_status) + 
+  //                     ', ' + (rt_status ? (rt_status.retweet_count + 'rts - RT ' + rt_status.user.screen_name + ', ' + rt_user.followers_count + ' followers'):'') + ')' +
+  //                 '\t'+  cleanTweet(tweet.text)
+  //                 );
 
   
-
-}
-
+} //process tweet
 
 ////////////////////////////////////////////////////////////////////////////
 //Simple app server stuff
@@ -826,6 +666,7 @@ var express = require('express');
 var app = express();
 
 //app.use(express.static(__dirname + '/public'));
+//where web server files loaded from
 app.use(express.static(__dirname + '/public_dist'));
 
 // var template = ' \
@@ -846,6 +687,9 @@ var clients = {};  // <- Keep a map of attached clients
 
 var clientTermsId = 0;
 var clientsTerms = {};  // <- Keep a map of attached clients
+
+var clientStatusInfoId = 0;
+var clientsStatusInfo = {};
 
 //This is from a sample I found somewhere - need to look that up
 
@@ -878,8 +722,24 @@ app.get('/terms/', function(req, res) {
         clientsTerms[clientId] = res;  // <- Add this client to those we consider "attached"
         req.on("close", function(){delete clientsTerms[clientTermsId]});  // <- Remove this client when he disconnects
     })(++clientTermsId)
-});
+  });
 
+app.get('/status-info/', function(req, res) {
+  //req.socket.setTimeout(Infinity);
+  req.socket.setTimeout(Number.MAX_VALUE);
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',  // <- Important headers
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive'
+    });
+    res.write('\n');
+    (function(clientId) {
+        clientsStatusInfo[clientId] = res;  // <- Add this client to those we consider "attached"
+        req.on("close", function(){delete clientsStatusInfo[clientTermsId]});  // <- Remove this client when he disconnects
+    })(++clientStatusInfoId)
+  });
+
+//this is used by browser clients to change the search terms
 app.get('/setterms', function(req, res) {
 
   //console.log("setterms");
@@ -900,11 +760,16 @@ app.get('/setterms', function(req, res) {
   console.log("trackStringForTwitter: " + trackStringForTwitter);
 
   if (trackStringForTwitter.trim().length > 0) {
-    //T = new Twit(config);
+    T = new Twit(config); //see if this helps with the rate limiting - just reconstruct a new one on change here...
     //console.log("new track",trackStringForTwitter);
     //streamToTwitter = T.stream('statuses/filter', { track: trackStringForTwitter, language: 'en' });
-    console.log("Will call startStream")
+    //console.log("Will call startStream")
     streamToTwitter = startStream(trackStringForTwitter);
+    res.send("Working to set terms... created stream");
+  }
+  else {
+    //don't create a stream
+    res.send("No search terms determined...");
   }
 
   updateClientsAboutWhatIsBeingTracked(trackStringForTwitter);
@@ -916,7 +781,6 @@ app.get('/setterms', function(req, res) {
   // var user_id = req.param('id');
   // var token = req.param('token');
   // var geo = req.param('geo');  
-  res.send("Working to set terms...");
   //res.send(user_id + ' ' + token + ' ' + geo);
 });
 
@@ -1112,3 +976,115 @@ app.listen(process.env.PORT || 8080);
 //   filter_level: 'low',
 //   lang: 'en',
 //   timestamp_ms: '1445085128691' }
+
+// This is some basic info on the use of Twit
+// {
+//     consumer_key:         '...'
+//   , consumer_secret:      '...'
+//   , access_token:         '...'
+//   , access_token_secret:  '...'
+// })
+
+//
+//  tweet 'hello world!'
+//
+// T.post('statuses/update', { status: 'Hello at ' +  (new Date()) }, function(err, data, response) {
+//   console.log("Updated status");
+//   console.log(data)
+// })
+
+//until
+//Returns tweets created before the given date. Date should be formatted as YYYY-MM-DD. 
+// Keep in mind that the search index has a 7-day limit. In other words, no tweets will be found for a date older than one week.
+//Example Values: 2015-07-19
+//
+//  search twitter for all tweets containing the word 'banana' since Nov. 11, 2011
+//
+// T.get('search/tweets', { q: 'shakespeare until:2010-11-11', count: 100 }, function(err, data, response) {
+//   console.log(data)
+// })
+
+//
+//  get the list of user id's that follow @tolga_tezel
+//
+// T.get('followers/ids', { screen_name: 'tolga_tezel' },  function (err, data, response) {
+//   console.log(data)
+// })
+
+//
+//  retweet a tweet with id '343360866131001345'
+//
+// T.post('statuses/retweet/:id', { id: '343360866131001345' }, function (err, data, response) {
+//   console.log(data)
+// })
+
+//
+//  destroy a tweet with id '343360866131001345'
+//
+// T.post('statuses/destroy/:id', { id: '343360866131001345' }, function (err, data, response) {
+//   console.log(data)
+// })
+
+//
+// get `funny` twitter users
+//
+// T.get('users/suggestions/:slug', { slug: 'twitter' }, function (err, data, response) {
+//   console.log("Got suggestions");
+//   console.log(data)
+// })
+
+// T.get('users/suggestions/:slug', { slug: 'shakespeare' }, function (err, data, response) {
+//   console.log(data)
+// })
+
+
+//
+// post a tweet with media
+//
+// var b64content = fs.readFileSync('/path/to/img', { encoding: 'base64' })
+
+// // first we must post the media to Twitter
+// T.post('media/upload', { media_data: b64content }, function (err, data, response) {
+
+//   // now we can reference the media and post a tweet (media will attach to the tweet)
+//   var mediaIdStr = data.media_id_string
+//   var params = { status: 'loving life #nofilter', media_ids: [mediaIdStr] }
+
+//   T.post('statuses/update', params, function (err, data, response) {
+//     console.log(data)
+//   })
+// })
+
+//
+//  stream a sample of public statuses
+//
+// var stream = T.stream('statuses/sample')
+
+// stream.on('tweet', function (tweet) {
+//   console.log(tweet)
+// })
+
+//
+//  filter the twitter public stream by the word 'mango'.
+//
+// var stream = T.stream('statuses/filter', { track: 'shakespeare' })
+
+// stream.on('tweet', function (tweet) {
+//   console.log(tweet)
+// })
+
+//
+// filter the public stream by the latitude/longitude bounded box of San Francisco
+//
+// var sanFrancisco = [ '-122.75', '36.8', '-121.75', '37.8' ]
+
+// var stream = T.stream('statuses/filter', { locations: sanFrancisco })
+
+// stream.on('tweet', function (tweet) {
+//   console.log(tweet)
+// })
+
+//
+// filter the public stream by english tweets containing `#apple`
+//
+

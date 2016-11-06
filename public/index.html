@@ -65,13 +65,20 @@
         </button>     
 <!--         <input id="add-new-term-input" type="text" value=""/>
  -->
-        <div class="input-group add-new-term-input-group">
-          <div class="input-group-btn">
-            <button type="button" class="btn btn-default btn-add-new-term">+</button>
-            <!-- Buttons -->
-          </div>
-          <input type="text" placeholder="Enter search term" id="the-new-term" class="form-control" aria-label="...">
+        <div class="input-group-wrapper" style="display:inline-block;">
+            <div class="input-group add-new-term-input-group">
+              <div class="input-group-btn">
+                <button type="button" class="btn btn-default btn-add-new-term">+</button>
+                <!-- Buttons -->
+              </div>
+              <input type="text" placeholder="Enter search terms (separate with commas)" id="the-new-term" class="form-control" aria-label="...">
+    <!--           <div class="search-warning">Note: changing the search terms "too often" can cause the twitter api to rate-limit response</div> -->
+            </div>
         </div>
+      <div id="status-info">
+        <div class="date"></div>
+        <div class="message"></div>
+      </div>
 
 
 <!--         <input id="current-terms-tags" type="text" value="" data-role="tagsinput" />
@@ -371,6 +378,9 @@
         <script src="bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"></script>
 
         <script src="bower_components/bootstrap-tagsinput/dist/bootstrap-tagsinput.js"></script>
+
+        <script src="bower_components/moment/moment.js"></script>
+
 
         <!-- endbuild -->
 

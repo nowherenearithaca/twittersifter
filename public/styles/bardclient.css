@@ -754,7 +754,7 @@ span.tag {
 
 
 .add-new-term-input-group {
-  width:300px;
+  width:400px;
 }
 
 .current-term {
@@ -767,3 +767,24 @@ span.tag {
   margin-top:3px;
   margin-left:2px;
 }
+
+#status-info {
+  display: inline-block
+  margin-left: 10px;
+  font-size:80%;
+}
+
+#status-info .date {
+  display: inline-block;
+  margin-right:10px;
+  font-style: italic;
+
+}
+
+#status-info .message {
+  display: inline-block
+
+}
+
+
+

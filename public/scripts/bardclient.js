@@ -973,6 +973,10 @@ var sourceTerms = new EventSource("/terms/");
 var isPaused = false;
 var pendingTweets = [];
 
+//various notes related to status with the twitter api, etc., may come in on this
+var sourceStatusInfo = new EventSource("/status-info/"); 
+
+
 var overArchingCntainerElement = $('#initial-tweet-container');
 var containerElement = $('#tweet-table tbody');
 var containerElementSpoken = $('#spoken-tweet-table tbody');
@@ -1093,7 +1097,7 @@ function sendNewTerms(terms) {
   d3.xhr(url)
     .get(function(error, data) {
       //console.log(error);
-      console.log(data);
+      //console.log(data);
     });
 }
 
@@ -1125,10 +1129,29 @@ $("#current-terms").on("click",".current-term-btn",function() {
 });
 
 
+sourceStatusInfo.onmessage = function(e) {
+
+  //generally just expect a basic message
+  var data = JSON.parse(e.data);
+
+  // console.log(e.data);
+  // console.log("status message", e.data.message);
+  var message = data.message;
+
+  var now =  moment().format("h:mm:ss a"); 
+  $("#status-info .date").html(now);
+  $("#status-info .message").html(message);
+
+  d3.select("#status-info")
+      .style("opacity",1)
+      .transition()
+        .duration(20*1000).style("opacity",0);
+
+};
+
 sourceTerms.onmessage = function(e) {
 
 	//console.log("e.data", e.data);
-
 
 	var theArray = e.data.split(",");
 
