@@ -204,11 +204,11 @@ $(document).ready(function() {
 
     $('#the-new-term').keypress(function(event){
         var keycode = (event.keyCode ? event.keyCode : event.which);
-        console.log(keycode);
+        //console.log(keycode);
         if(keycode === 13){
             //add it
             var theVal = $(this).val();
-            console.log("theVal", theVal);
+            //console.log("theVal", theVal);
             bardClient.addTerm(theVal);
             $(this).val(""); //clear it...
             //alert('You pressed a "enter" key in textbox, here submit your form'); 

@@ -769,14 +769,16 @@ span.tag {
 }
 
 #status-info {
-  display: inline-block
+  display: inline-block;
   margin-left: 10px;
+  margin-top:-25px;
+  vertical-align: middle;
   font-size:80%;
 }
 
 #status-info .date {
   display: inline-block;
-  margin-right:10px;
+  margin-right:5px;
   font-style: italic;
 
 }

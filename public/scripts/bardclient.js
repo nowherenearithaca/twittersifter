@@ -31,6 +31,7 @@
 /* global SmsLingo */
 /* global speechSynthesis */
 /* global SpeechSynthesisUtterance */
+/* global moment */
 //load speech stuff for later
 //TODO - move to other lib
 

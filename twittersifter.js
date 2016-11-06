@@ -231,7 +231,7 @@ function getRandomVoice() {
 
   //used this once to see the full thing returned from the streaming api var haveLoggedFull = false;
 
-  var track = argv.track || "happy birthday"; // default is just something to always get results
+  var track = argv.track || ""; //happy birthday"; // default is just something to always get results
 
   if (track==="allnfl") {
     track = getAllNFLTracking();
@@ -293,41 +293,47 @@ function getRandomVoice() {
 
       console.log("starting to get tweets - " + trackedThingsForTwitterAPI);
 
-      var streamToTwitter = T.stream('statuses/filter', { track: trackedThingsForTwitterAPI, language: 'en' });
+      var streamToTwitter = undefined;
 
-      //console.log("setting up stream to process tweets");
-      streamToTwitter.on('tweet', function (tweet) {
-    //     if (!haveLoggedFull) {
-    //       console.log(tweet)
-    //       haveLoggedFull = true;
-    //     }
-        //console.log("about to call process tweet");
-        //console.log(trackedThingsForTwitterAPI.split(","));
-        processTweet({tweet:tweet, trackedThings: trackedThingsForTwitterAPI, 
-                        trackedThingsArray:trackedThingsArrayStructure,
-                        retweets:false, //whether we include retweets in calculating things at the moment
-                        sayIt: sayIt});
-        //console.log(tweet.user.name + "\t "+ tweet.user.screen_name + "\t " + tweet.created_at + "\t" + tweet.text);
-    //    console.log(tweet.user.name + "\t "+ tweet.user.screen_name + "\t " + tweet.text);
-      });
+      if (trackedThingsForTwitterAPI.trim().length > 0) {
 
-      streamToTwitter.on('limit', function (limitMessage) {
-        //this is an info thing that twitter did not provide all of the tweets
-        // { limit: { track: 8, timestamp_ms: '1478354620889' } }
-        // not logging this to console... console.log("Limit",limitMessage);
-      });
+        streamToTwitter = T.stream('statuses/filter', { track: trackedThingsForTwitterAPI, language: 'en' });
 
-      streamToTwitter.on('reconnect', function (request, response, connectInterval) {
-          //...
-          if (response.statusCode === 420) {
-            //twitter says to "Enhance your calm" and back off
-            sendStatusMessageToClients("Hold on - twitter is now rate limiting - must wait before reconnecting again...")
-          }
-      });
+        //console.log("setting up stream to process tweets");
+        streamToTwitter.on('tweet', function (tweet) {
+      //     if (!haveLoggedFull) {
+      //       console.log(tweet)
+      //       haveLoggedFull = true;
+      //     }
+          //console.log("about to call process tweet");
+          //console.log(trackedThingsForTwitterAPI.split(","));
+          processTweet({tweet:tweet, trackedThings: trackedThingsForTwitterAPI, 
+                          trackedThingsArray:trackedThingsArrayStructure,
+                          retweets:false, //whether we include retweets in calculating things at the moment
+                          sayIt: sayIt});
+          //console.log(tweet.user.name + "\t "+ tweet.user.screen_name + "\t " + tweet.created_at + "\t" + tweet.text);
+      //    console.log(tweet.user.name + "\t "+ tweet.user.screen_name + "\t " + tweet.text);
+        });
 
-      streamToTwitter.on('connected', function (request, response, connectInterval) {
-            sendStatusMessageToClients("Connected to twitter api...")
-      });
+        streamToTwitter.on('limit', function (limitMessage) {
+          //this is an info thing that twitter did not provide all of the tweets
+          // { limit: { track: 8, timestamp_ms: '1478354620889' } }
+          // not logging this to console... console.log("Limit",limitMessage);
+        });
+
+        streamToTwitter.on('reconnect', function (request, response, connectInterval) {
+            //...
+            if (response.statusCode === 420) {
+              //twitter says to "Enhance your calm" and back off
+              sendStatusMessageToClients("Hold on - twitter is now rate limiting - must wait before reconnecting again...")
+            }
+        });
+
+        streamToTwitter.on('connected', function (request, response, connectInterval) {
+              sendStatusMessageToClients("Connected to twitter api...")
+        });
+
+      }
 
     return streamToTwitter;
 
