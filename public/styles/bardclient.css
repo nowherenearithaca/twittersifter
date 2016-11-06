@@ -768,22 +768,25 @@ span.tag {
   margin-left:2px;
 }
 
-#status-info {
+.info-table {
   display: inline-block;
   margin-left: 10px;
   margin-top:-25px;
   vertical-align: middle;
-  font-size:80%;
+  font-size:70%;
 }
 
-#status-info .date {
+#status-info {
+}
+
+#limit-info .date, #status-info .date {
   display: inline-block;
   margin-right:5px;
   font-style: italic;
 
 }
 
-#status-info .message {
+#limit-info .message, #status-info .message {
   display: inline-block
 
 }

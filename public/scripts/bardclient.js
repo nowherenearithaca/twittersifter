@@ -1138,14 +1138,27 @@ sourceStatusInfo.onmessage = function(e) {
   // console.log(e.data);
   // console.log("status message", e.data.message);
   var message = data.message;
+  var type = data.type;
 
   var now =  moment().format("h:mm:ss a"); 
-  $("#status-info .date").html(now);
-  $("#status-info .message").html(message);
 
-  $("#status-info").stop()
-                    .css("opacity",1)
-                    .animate({opacity:0}, 20*1000);
+  if (type && type === "Limit") {
+    
+    $("#limit-info .date").html(now);
+    $("#limit-info .message").html(message);
+
+    $("#limit-info").stop()
+                      .css("opacity",1)
+                      .animate({opacity:0}, 10*1000);
+  }
+  else {
+    $("#status-info .date").html(now);
+    $("#status-info .message").html(message);
+
+    $("#status-info").stop()
+                      .css("opacity",1)
+                      .animate({opacity:0}, 10*1000);
+  }
 
   //it won't stop the transition when doing a new one when it is still fading out                  
   // d3.select("#status-info")

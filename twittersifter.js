@@ -319,18 +319,38 @@ function getRandomVoice() {
           //this is an info thing that twitter did not provide all of the tweets
           // { limit: { track: 8, timestamp_ms: '1478354620889' } }
           // not logging this to console... console.log("Limit",limitMessage);
+
+          //These messages indicate that a filtered stream has matched more Tweets 
+          //    than its current rate limit allows to be delivered. Limit notices contain 
+          //    a total count of the number of undelivered Tweets since the connection 
+          //    was opened, making them useful for tracking counts of track terms, for example. 
+          //    Note that the counts do not specify which filter predicates undelivered messages matched.
+
+            var totalCountInfo = "";
+            try {
+              //var limitObject = JSON.parse(limitMessage);
+              totalCountInfo = " (missed tweets: " + limitMessage.limit.track + ")";
+
+            }
+            catch (e) {
+              totalCountInfo = " (" + limitMessage + ")";
+            }
+
+              sendStatusMessageToClients("More tweets matched than rate limits allow " + totalCountInfo,
+                                          "Limit");
         });
 
         streamToTwitter.on('reconnect', function (request, response, connectInterval) {
             //...
             if (response.statusCode === 420) {
               //twitter says to "Enhance your calm" and back off
-              sendStatusMessageToClients("Hold on - twitter is now rate limiting - must wait before reconnecting again...")
+              sendStatusMessageToClients("Hold on - twitter is now rate limiting - must wait before reconnecting again...",
+                                          "Reconnect");
             }
         });
 
         streamToTwitter.on('connected', function (request, response, connectInterval) {
-              sendStatusMessageToClients("Connected to twitter api...")
+              sendStatusMessageToClients("Connected to twitter api...", "Connect")
         });
 
       }
@@ -339,7 +359,7 @@ function getRandomVoice() {
 
   }
 
-  function sendStatusMessageToClients(msg) {
+  function sendStatusMessageToClients(msg, type) {
 
     console.log("sendStatusMessageToClients: " + msg);
 
@@ -353,6 +373,7 @@ function getRandomVoice() {
           //timestamp_ms: '1445085128691'
 
           clientsStatusInfo[clientId].write('data: ' + '{\n' +
+                                  'data: "type": "'+ type + '", \n' +
                                   'data: "message": "'+ msg + '" \n' +
                                   'data: }\n\n'); // <- Push a message to a single attached client
         };
