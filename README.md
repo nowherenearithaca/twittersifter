@@ -7,22 +7,22 @@ This is a simple node app for watching and hearing tweets.
 ## Setting things up
 
 
-1.     **Make sure you have `node` installed for your operating system - you can get it from https://nodejs.org/en/download/**
+1\.     **Make sure you have `node` installed for your operating system - you can get it from https://nodejs.org/en/download/**
 
-1.     **With `npm` (which is installed with `node`), install bower and grunt:**
+2\.     **With `npm` (which is installed with `node`), install bower and grunt:**
 
  `npm install -g bower`
 
  `npm install -g grunt-cli`
 
 
-1\. 	**Download the needed node/bower components (these will take a few minutes to complete):**
+3\. 	**Download the needed node/bower components (these will take a few minutes to complete):**
 
  `npm install`
 
  `bower install`
 
-2\. 	**Create config.js**
+4\. 	**Create config.js**
 
 Create a file `config.js` in the main directory that contains your twitter keys:
 ```javascript
@@ -38,7 +38,7 @@ You can get these by creating an "app" at twitter at https://apps.twitter.com/
 Don't commit `config.js` to a public repository!
 
 
-3\. **Build the web app side of things**
+5\. **Build the web app side of things**
 
 `grunt`
 
@@ -46,13 +46,13 @@ Do this any time you modify files in the public directory.
 
 It puts everything needed for the web side in `public_dist` (creating `public_dist` if necessary).
 
-4\. **Start the server portion**
+6\. **Start the server portion**
 
-In a command window, start the server portion (this particular example will catch tweets that contain "hello" or "hi"):
+In a command window, start the server portion (this particular example will catch tweets that contain "hello" or "hi"; you can omit `track` and then set terms from the client):
 
 `node twittersifter.js --track hello,hi`
 
-5\. **Watch and Listen to Tweets**
+7\. **Watch and Listen to Tweets**
 
 Open a browser using web address http://localhost:8080
 
